@@ -1,0 +1,178 @@
+from pathlib import Path
+import csv, json, shutil, subprocess, collections, hashlib, difflib
+R=Path('/workspace/TELEGRAMBOTS/docs/groupguard-rose')
+A=Path('/tmp/groupguard-phase00b-audit')
+H=Path('/tmp/groupguard-phase00b-handoff')
+def table(head,rs):
+ def c(x):return str(x).replace('|','&#124;').replace('\n',' ')
+ return '| '+' | '.join(head)+' |\n| '+' | '.join('---' for _ in head)+' |\n'+''.join('| '+' | '.join(c(x) for x in row)+' |\n' for row in rs)
+rows=list(csv.DictReader((R/'FEATURE_MATRIX.csv').open()));counts=json.loads((R/'LEDGER_COUNTS.json').read_text())
+e=R/'evidence/phase00b';e.mkdir(exist_ok=True)
+for p in A.glob('*.log'):shutil.copyfile(p,e/p.name)
+for name in ('dependencies.txt','import-diffstat.txt'):shutil.copyfile(A/name,e/name)
+shutil.copyfile(A/'build_ledger.py',e/'build_ledger.py.txt')
+shutil.copyfile(A/'build_report.py',e/'build_report.py.txt')
+changes=subprocess.check_output(['git','diff','--numstat','e474c59784c47f4055cdc0eab7a74d111a1ff66b','HEAD'],cwd='/workspace/TELEGRAMBOTS',text=True)
+groups=collections.Counter()
+for l in changes.splitlines():
+ path=l.split('\t')[-1]
+ if path.startswith('core/db/migrations/'):group='migrations'
+ elif path.endswith('.ftl'):group='locales'
+ elif path.startswith('tests/'):group='tests'
+ elif path.startswith('docs/') or path=='README.md':group='repository documentation'
+ elif path.startswith(('core/','bots/')):group='application/SDK/assets'
+ else:group='build/runtime/example configuration'
+ groups[group]+=1
+git_evidence=subprocess.check_output(['git','log','-2','--format=%H%n%B'],cwd='/workspace/TELEGRAMBOTS',text=True)
+git_evidence+='\nEnding/reference trees:\n'+subprocess.check_output(['git','rev-parse','HEAD^{tree}','d55fc44fe1a63ba5788125c1325d2a855944d5e0^{tree}'],cwd='/workspace/TELEGRAMBOTS',text=True)
+same=subprocess.run(['git','diff','--exit-code','d55fc44fe1a63ba5788125c1325d2a855944d5e0','HEAD'],cwd='/workspace/TELEGRAMBOTS',capture_output=True,text=True)
+git_evidence+=f'git diff reference HEAD exit={same.returncode}; output={same.stdout!r}\n'
+(e/'git-provenance.log').write_text(git_evidence)
+test_table=table(['Exact command (repository cwd)','Exit','Pass / fail / skip','Evidence'],[
+('.venv/bin/python -m pip check',0,'n/a','No broken requirements; editable dependencies unchanged by baseline'),
+('.venv/bin/python -m core bots',0,'9 contracts valid','7 standalone modules +2 template-only; GroupGuard is a template'),
+('.venv/bin/ruff check .',0,'n/a','All checks passed'),
+('.venv/bin/mypy',0,'242 source files','No issues'),
+('.venv/bin/pytest -q tests/bots/groupguard tests/bots/factory tests/test_locales.py',0,'36 / 0 / 0','2.99s'),
+('.venv/bin/pytest -q',1,'257 / 1 / 3','33.91s; doctools malformed HTML expectation fails'),
+('TEST_DATABASE_URL=postgresql+asyncpg://bot@127.0.0.1:55432/gg_phase00b_integration .venv/bin/pytest -q tests/integration',0,'2 / 0 / 0','2.14s; disposable PostgreSQL'),
+('TEST_DATABASE_URL=postgresql+asyncpg://bot@127.0.0.1:55432/bot TEST_REDIS_URL=redis://127.0.0.1:56379/0 .venv/bin/pytest -q tests/e2e',0,'1 / 0 / 0','23.75s; disposable PG/Redis, local mock Bot API/scripted AI'),
+('.venv/bin/pytest -q tests/bots/doctools/test_review.py::test_malformed_html_and_invalid_encoding_are_controlled',1,'0 / 1 / 0','Isolated reproducible baseline failure;0.24s'),
+('PYTHONPATH=/workspace/TELEGRAMBOTS .venv/bin/python docs/groupguard-rose/history/PHASE_00/evidence/probes.py.txt',0,'10 diagnostic observations','Script completion0 does not mean feature acceptance passed'),
+])
+baseline='''# Phase 0B refreshed baseline
+
+Reference date:2026-10-12 Asia/Jakarta. Starting branch `work`, HEAD `e474c59784c47f4055cdc0eab7a74d111a1ff66b`; only pre-existing untracked `docs/groupguard-rose/`. Its20 artifacts preserved byte-for-byte in history/PHASE_00 and `/workspace/groupguard-phase00-original.tar.gz`, SHA256 `0d525c269a96c9235379c07b0fecdef9cb81bddd38844519628bdc4346575d3b`.
+
+Verified supplied bundle SHA256 `61869c1cae2bc35ae3aa1cc8080fdbe8656ddaf22c6c69a8b7ae3503f74768cb`, all six manifest member hashes, and `git bundle verify` exit0. Prerequisite `44ff18f39d2fbbc8583eb5e0ddbd013ffd20f83f` has the same tracked starting tree `dde227cef0228c7d0104543aa3374cb7c996e41b`. Fetched with `git fetch /tmp/groupguard-phase00b-handoff/CLOUD_BASELINE.bundle HEAD`; requested commits were not already ancestors. Ordinary `git cherry-pick -x` in order succeeded without conflict:
+
+- `17f563460d2d74ac7d0be70989c94c663e91d9d9` → `cf3afa3067e4e2769762e0c64a944b86de9439a5`.
+- `d55fc44fe1a63ba5788125c1325d2a855944d5e0` → `96357ef45c6492e03c626581ce2ee156d2da3816`.
+
+Ending/reference tree `7895f72031fd4fac13b4ff280ba04b16c8d5842c`; `git diff --exit-code d55fc44fe1a63ba5788125c1325d2a855944d5e0 HEAD` exit0, empty. No additional tracked edits. Import diffstat65 paths,5998 insertions,44 deletions. Author retained; new cherry-pick hashes differ from supplied hashes and retain provenance. Audit revisions remain untracked, uncommitted. No other user changes discarded.
+
+Refreshed source includes CV/doctools, shared throttle_exempt/payment/AI/file/UI changes, GroupGuard flood message-ID member, `0008_cvbot -> 0009_doctools` and existing `tests/e2e`. Dependency requirements unchanged; retained editable `.venv`, pipcheck0; full installed versions saved. Python3.12.14, aiogram3.31.0, SQLAlchemy2.1.4, asyncpg0.32.0, Alembic1.20.0, redis-py7.4.1, fakeredis2.39.0, pytest9.1.1/pytest-asyncio1.4.0, ruff0.17.0, mypy2.4.0, PyMuPDF1.28.2, pypdf6.20.0.
+
+'''+test_table+'''
+The full default suite skips the two integration tests because TEST_DATABASE_URL is absent and one e2e test because TEST_DATABASE_URL/TEST_REDIS_URL are absent. They were executed separately and passed; their passes do not remove the full-suite failure. Repository pytest excludes live tests by default (`-m 'not live'`); no live Telegram/web QA was requested or run.
+
+Failure: `tests/bots/doctools/test_review.py:77`, `Failed: DID NOT RAISE CitationError` for `page_reference(b"<![bogus]><title>Study</title>", ...)`. Python3.12.14 stdlib HTMLParser accepts that declaration; `bots/doctools/citations.py` returns title Study, and its exception handler is never entered. Isolated rerun reproduces. This supplied baseline test/code mismatch is unchanged; the original checkout had no doctools test. No audit fix applied.
+
+Disposable services were new Docker containers `groupguard-phase00b-postgres` (postgres:16-alpine, actual PostgreSQL16.15, loopback55432, test-only trust rolebot) and `groupguard-phase00b-redis` (redis:7-alpine, actual7.4.11, loopback56379). Dedicated integration database created on that server. Integration drops its selected public schema; e2e uses a unique created database and refuses nonempty RedisDB0. Both suites ran against these new services, not shared/production onboarding services. E2e migrated actual schema, exercised gateway/scheduler/worker/childfeedback plus GroupGuard CAPTCHA/flood and other bot flows, and validated shutdown. Its Telegram/AI were local mocks; no secrets/.env/live groups used. PG e2e database was removed and RedisDB0 size was0 afterward. Both test containers stopped successfully; unrelated services untouched. Stopped containers retain only disposable test data and are available for later explicit reuse/removal.
+
+Installed SDK introspection confirms reaction-removal methods, sender-chat ban/unban, getChatAdministrators return_bots, can_react_to_messages and guest_message. No deployed server API version/capability was contacted or certified. Zero repeated blocked documentation requests in Phase0B.
+'''
+(R/'BASELINE.md').write_text(baseline)
+
+legacy=[r for r in rows if r['row_kind'] in ('legacy','alias spelling') and not r['id'].startswith('SRC-')]
+from bots.groupguard.chatconfig import ChatConfig
+def legacy_syntax(r):
+ if r['id'].startswith('GG-CFG-'):
+  f=ChatConfig.model_fields[r['id'].removeprefix('GG-CFG-')]
+  return r['command_event_syntax']+' = '+repr(f.get_default(call_default_factory=True))+((' bounds '+','.join(str(x) for x in f.metadata)) if f.metadata else '')
+ return r['command_event_syntax']
+legacy_inventory=table(['Retained ID','Current contract / syntax','Phase','Implementation'],[(r['id'],legacy_syntax(r),r['phase'],r['implementation_status']) for r in legacy])
+legacy_inventory+='''
+Shared acceptance expands to every named ID: GG-CFG fields round-trip existing values/defaults without changing unrelated JSON or bot/chat; GG-MEDIA types save/retrieve correct bot-bound file/caption; GG-FMT fillings render intended user/group/count safely; GG-START paths select intended home/rules/settings without router shadow; GG-LOCK aliases match their local types without neighboring false positives; GG-LANG rows require actual translated GroupGuard messages rather than core fallback; GG-CORE private commands/limits preserve established context and validate bounds; GG-CMD legacy extensions preserve aliases while applying source-family authority; GG-EVT rows assert correct observed event/API/lifecycle in their named syntax, with failures P01–P10 and static residuals below; GG-FOUND rows use corresponding negative1A/1B/1C cases; GG-FACTORY namespace/lifecycle/branding/jobs/night-off/features require wrong-bot denial, unload/restart/deadline behavior and preservation of child ownership/credit/inherited feature sets. These are acceptance contracts, not new executed tests. Full per-row semantics and evidence are in the CSV.
+'''
+open_questions=table(['ID','Sources','Question','Phase / acceptance'],[(r['id'],r['source_refs'],r['semantics_defaults'],r['phase']+' — '+r['acceptance_scenario']) for r in rows if r['row_kind']=='concrete open question'])
+maprows=[]
+gen={};exec((A/'build_ledger.py').read_text().split('source_status =')[0],gen)
+# Exact expanded mapping lives in ID_MAP.csv; this compact map gives the same
+# decomposition families inline, with all original IDs preserved in the table.
+mapdata=list(csv.DictReader((R/'ID_MAP.csv').open()))
+for m in mapdata:
+ if m['old_id'].startswith('REQ-'):
+  families=[]
+  for id in m['new_ids'].split(';'):
+   r=next(x for x in rows if x['id']==id)
+   if id.startswith('Q') or id.startswith('SRC'): families.append(id)
+   else:families+=r['source_refs'].split(',')
+  maprows.append((m['old_id'],','.join(dict.fromkeys(x for x in families if x))))
+docfiles=['BASELINE.md','ARCHITECTURE.md','DECISIONS.md','FEATURE_MATRIX.csv','FEATURE_MATRIX.md','SOURCE_COVERAGE.md','PLAN.md','REPORT_TEMPLATE.md']
+docdiff=[]
+for name in docfiles:
+ a=(R/'history/PHASE_00'/name).read_text().splitlines();b=(R/name).read_text().splitlines()
+ ins=dele=0
+ for tag,i,j,k,l in difflib.SequenceMatcher(None,a,b,autojunk=True).get_opcodes():
+  if tag in ('insert','replace'):ins+=l-k
+  if tag in ('delete','replace'):dele+=j-i
+ docdiff.append((name,ins,dele))
+(e/'audit-diffstat.txt').write_text(table(['Revised historical artifact','Added lines','Removed lines'],docdiff)+'\nNew evidence/source/mapping/count/report files and untouched historical copies are additional untracked documentation. Report/manifest sizes excluded to avoid self-reference.\n')
+
+report='''# PHASE 0B REPORT
+
+Reference date:12 October2026, Asia/Jakarta. **Ready for report review; refreshed baseline has one reproducible test failure.** Phase0B established aligned source, a supplied-source inventory and a bounded blueprint. No new GroupGuard feature/fix, deployment, merge or live Telegram action was performed. The two source imports were specifically authorized baseline changes. Attached digest/review/plan were reference material; the user's pasted Phase0B request controlled scope.
+
+## 1. Baseline identity, import and verification
+
+'''+baseline.split('# Phase 0B refreshed baseline\n\n',1)[1].split('Refreshed source includes',1)[0]+'''
+The65 imported paths divide as follows: '''+', '.join(f'{k}: {v}' for k,v in groups.items())+'''. This is supplied source, including application/core changes, two migrations, tests, four locale files, docs and example/build configuration. It is not new implementation by the audit agent.
+
+## 2. Changed audit artifacts and reconciliation
+
+All paths below are under `docs/groupguard-rose/` unless stated otherwise. Revised: BASELINE.md (refreshed identity/checks), ARCHITECTURE.md (bounded seams), DECISIONS.md (facts/proposals/policies), FEATURE_MATRIX.csv/.md (decomposed inventory), SOURCE_COVERAGE.md (all supplied pages), PLAN.md and REPORT_TEMPLATE.md (supplied originals restored plus explicit reconciliation). Added: ID_MAP.csv, LEDGER_COUNTS.json, reports/PHASE_00B.md, sources/{OFFLINE_SOURCE_DIGEST.md,ORIGINAL_PLAN.md,ORIGINAL_REPORT_TEMPLATE.md,PHASE_00_REVIEW.md,MANIFEST.json}, and evidence/phase00b/{bots.log,ruff.log,mypy.log,focused.log,full.log,integration.log,e2e.log,probes.log,failure-rerun.log,failure-diagnosis.log,sdk-capabilities.log,pip-check.log,bundle-verify.log,service-cleanup.log,ledger-counts.log,dependencies.txt,import-diffstat.txt,git-provenance.log,audit-diffstat.txt,artifact-integrity.log,compact-inventory.md,build_ledger.py.txt,build_report.py.txt}. MANIFEST.sha256 is refreshed. historical20 files copied unchanged to history/PHASE_00; current reports/PHASE_00.md and original evidence remain unchanged. Original archive outside repo retains SHA identity above.
+
+The reconstructed plan/template survive in history. Supplied originals restore exact phase/report requirements; appendices clarify that broad later title/transfer/global/crossbot/retention assumptions have no mandatory source authority. Existing audit findings survive. Phase1 is divided into reviewable1A/1B/1C, and later roadmap phases do not authorize execution.
+
+Historical artifact text comparison (new files and immutable archival copies additional; report/manifest excluded from this measured text diff):
+
+'''+table(['Artifact','Added lines','Removed lines'],docdiff)+'''
+## 3. Ledger counts, status interpretation and source provenance
+
+'''+f"{counts['total_rows']} traceability rows, not a completed-feature count. All150 earlier non-planning IDs retained; all51 REQ areas decomposed through an explicit mapping. No whole Rose feature is certified implemented-and-tested by receiving the digest. Command spellings and aliases share canonical families where applicable; variants/typed members remain independent acceptance rows. S06/S40 share one connection implementation with both source references.\n\n"+table(['Implementation evidence status','Rows'],counts['implementation'].items())+'\n'+table(['Specification status','Rows'],counts['specification'].items())+'\n'+table(['Owning phase','Rows'],sorted(counts['phase'].items()))+'''
+The table below accounts for S01–S50 and T01 and supplies the complete compact sourced inventory. All URLs are the original references. Evidence is the **reviewer-supplied digest**, dated2026-10-12, independently condensed from reviewer web tools:50/50 navigation pages accounted for plus T01, zero cloud direct page retrieval, no full archive/live parity claim. Introductory pages are non-functional coverage. Specification receiving and implementation verification are separate.
+
+Inventory notation: `Snn-Bnn` expands each numbered behavior/acceptance item below; `Snn-PREFIX-TOKEN` expands every listed token to its exact stable ID. Command spelling IDs are listed explicitly. Existing `GG-CMD-*` sourced spellings are partial; new `Snn-C-*` spellings are not implemented. Family-level partial means only existing subsets exist; it does not claim each proposed behavior implemented. Typed-row statuses are specified for their rosters. Concrete source defects/undefined execution take Q/status precedence. Alias `warntime`→`setwarntime` and note repeat/repeated are proposals; `say`→`echo` shares a family, and fbanstat/fedstat share the query family with distinct target/context forms. Each command acceptance includes its source-listed variants, required rights and denial for wrong actor/right/chat/bot/API failure; per-behavior and typed acceptance are stated below.
+
+'''+(e/'compact-inventory.md').read_text()+'''
+## 4. Preserved implementation and compatibility inventory
+
+Sourced command rows above retain their existing IDs. The following remaining existing-code rows include inherited private flows, defaults, media, aliases, optional protections, factory behavior and foundations. Historical code facts do not certify future source contracts. `SRC-rose` now records the digest inventory, `SRC-api` SDK inspection/deployment gap, and `SRC-reference` exact verified tree. `SRC-local-api` retains the official tdlib local-server README inspection (Phase1, existing-unverified); acceptance requires checking actual deployed capabilities/version, not inferring them from a mutable tag. Existing alias IDs share source families: unwarn/rmwarn, resetwarns/resetwarn, admin/admins/report, addblock/addblocklist, rmblock/unblocklist/rmblocklist. Preserve aliases while fixing authority only in a later authorized phase. Local settings/night/help remain compatibility commands.
+
+'''+legacy_inventory+'''
+## 5. Explicit planning-area decomposition and unresolved questions
+
+Each old REQ ID maps to all actual behavior/command/typed/variant IDs in these source families; source sections above give each exact ID and acceptance. ID_MAP.csv contains the expanded target-ID list, not just a broad planning row. Unsupported title/transfer parts map to Q09; privacy periods to Q06. Cumulative/live review remains a concrete later validation dependency.
+
+'''+table(['Old planning ID','Decomposed source families / explicit questions'],maprows)+'\n'+open_questions+'''
+## 6. Refreshed checks, runtime and diagnostics
+
+'''+test_table+'''
+Full suite:257 passed,1 failed,3 skipped. Two PostgreSQL and one e2e skip reflect missing opt-in URLs in the default command; all three executed separately successfully. Default pytest excludes live tests. No failure is converted into a passing result.
+
+The failing imported test is `tests/bots/doctools/test_review.py::test_malformed_html_and_invalid_encoding_are_controlled`, line77: `Failed: DID NOT RAISE CitationError`. On Python3.12.14 stdlib HTMLParser accepts `<![bogus]><title>Study</title>`; page_reference returns Study without triggering its ValueError/AssertionError handler. Isolated rerun fails identically. This is supplied baseline code/test behavior, absent from the original checkout. It was not fixed during this audit.
+
+Dependencies: unchanged pyproject requirement lists, retained editable `.venv`, pipcheck0; Python3.12.14, aiogram3.31.0, SQLAlchemy2.1.4, asyncpg0.32.0, Alembic1.20.0, redis-py7.4.1/fakeredis2.39.0, pytest9.1.1/pytest-asyncio1.4.0, ruff0.17.0, mypy2.4.0, PyMuPDF1.28.2, pypdf6.20.0. Full freeze saved. No unnecessary dependency update.
+
+Disposable PostgreSQL16.15 and Redis7.4.11 ran in dedicated new containers on loopback55432/56379. Integration used its own gg_phase00b_integration database and exercised migration upgrade/downgrade/re-upgrade, schema comparison and core concurrency. E2e created/dropped its own database, refused a nonempty RedisDB0, performed actual migration, gateway/scheduler/worker and SIGTERM/drain flows. It exercised anonymous, GroupGuard CAPTCHA/flood, factory childfeedback, CV PDF/AI and doctools PDF merge/image flows with scripted AI/local mock Bot API, no inherited .env/live credentials. This passing harness does not prove GroupGuard child security/reactions/edits/concurrency. Post-test no e2e database remained, RedisDB0 size0; dedicated containers stopped, unrelated services untouched. Stopped test containers contain disposable data only. No production migration/backfill/deployment was run.
+
+SDK capability introspection confirmed both reaction-delete methods, sender-chat ban/unban, getChatAdministrators return_bots, can_react_to_messages and guest_message. Installed capability does not certify the deployed API. Actual server version/live Telegram and full Rose archive remain unobserved.
+
+| Probe | Refreshed observation | Meaning / owning fix |
+| --- | --- | --- |
+| P01 | Anonymous group sender has creator/all rights | Confirmed escalation;1A |
+| P02 | Edited blocked link causes0 deletes | Edited routing gap;1B |
+| P03 | Core /terms with blocked content replies,0 deletes | Protection bypass before consuming core route;1B |
+| P04 | /start gs_GROUP shows home, no panel | Router shadow;1B/connection adoption |
+| P05 | Two service instances lose goodbye edit | Cached whole-JSON overwrite;1C |
+| P06 | Mocked ban failure leaves0 warnings and announces banned | False success/pre-sanction reset;1A result ordering,1C concurrency |
+| P07 | Forced stale expiry read kicks after verification success | Challenge transition race;1C/Phase4 |
+| P08 | Old/unrelated-message callback consumes new challenge | Missing immutable generation/message;1C/Phase4 |
+| P09 | Allowed updates callback_query/chat_join_request/chat_member/message/my_chat_member/pre_checkout_query only | No edited/reaction subscriptions;1B |
+| P10 | Invalid10s duration parses None/as reason | Required temporary can become permanent;1A |
+
+Probe script exit0 means observations completed, not successful acceptance. Static residuals: admin cache300s without invalidation; panel generic-admin checks; add/count/reset warning and quota races; joinrequest verified-before-approve without issued identity; child due-index entry removed before runtime; last night-off group can stop restoration scheduling; night permission snapshot TTL1day, failure ordering and permissive unmute fallback; newcomer configured up to168h but state TTL24h; bot-bound media origin missing; HTML truncation/256-character PG warning reason boundaries. Existing import addresses equal-timestamp flood collision via message IDs, without establishing replay-after-reset correctness. These remain scoped evidence, no fixes in0B.
+
+## 7. Narrowed architecture and exact proposed1A contracts
+
+'''+(R/'ARCHITECTURE.md').read_text().split('# Phase 0B bounded foundation blueprint\n\n',1)[1]+'''
+## 8. Ending state and next handoff
+
+Ending HEAD `96357ef45c6492e03c626581ce2ee156d2da3816`, branch work.65-path supplied import diffstat5998 insertions/44 deletions; tracked tree exactly reference and no additional tracked edits. Audit folder remains untracked/uncommitted; no audit commit, reset, force update, merge or deploy. Original20 artifacts preserved and checksums recorded. Full-suite baseline failure and Q01–Q10 remain visible for review. Phase0B's requested inventory/alignment/checks/blueprint work is complete; release verification is incomplete because the failure and unobserved deployment/live edges remain. Recommend the bounded1A scope only after the reviewer's next prompt; its safety bounds/TTL choices are proposals, not approved policy or implemented changes.
+
+Stopped after Phase 0B. Awaiting the reviewer's next prompt.
+'''
+(R/'reports/PHASE_00B.md').write_text(report)
+print('report words',len(report.split()),'bytes',len(report.encode()))
+print('import category counts',dict(groups))

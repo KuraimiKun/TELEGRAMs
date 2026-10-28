@@ -1,0 +1,26 @@
+....FF                                                                   [100%]
+=================================== FAILURES ===================================
+_ test_onboarding_link_uses_actual_instance_and_exposes_precise_rights[child-A] _
+docs/groupguard-rose/evidence/long-running/phase12/configured_caps.py:53: in test_onboarding_link_uses_actual_instance_and_exposes_precise_rights
+    assert 'factory' in notice.text.lower()
+E   assert 'factory' in "🛡 hi <b>alice</b>! i'm <b>group guard</b> — i keep groups clean and safe.\n\n• 🤖 captcha for newcomers, anti-bot & ca...les, 👋 custom welcomes\n• 🌙 night mode, 🧠 ai spam detection, 📒 log channel\n\nadd me to your group and make me admin 👇"
+E    +  where "🛡 hi <b>alice</b>! i'm <b>group guard</b> — i keep groups clean and safe.\n\n• 🤖 captcha for newcomers, anti-bot & ca...les, 👋 custom welcomes\n• 🌙 night mode, 🧠 ai spam detection, 📒 log channel\n\nadd me to your group and make me admin 👇" = <built-in method lower of str object at 0x18e1a560>()
+E    +    where <built-in method lower of str object at 0x18e1a560> = "🛡 Hi <b>Alice</b>! I'm <b>Group Guard</b> — I keep groups clean and safe.\n\n• 🤖 Captcha for newcomers, anti-bot & CA...les, 👋 custom welcomes\n• 🌙 Night mode, 🧠 AI spam detection, 📒 log channel\n\nAdd me to your group and make me admin 👇".lower
+E    +      where "🛡 Hi <b>Alice</b>! I'm <b>Group Guard</b> — I keep groups clean and safe.\n\n• 🤖 Captcha for newcomers, anti-bot & CA...les, 👋 custom welcomes\n• 🌙 Night mode, 🧠 AI spam detection, 📒 log channel\n\nAdd me to your group and make me admin 👇" = SendMessage(chat_id=20, text="🛡 Hi <b>Alice</b>! I'm <b>Group Guard</b> — I keep groups clean and safe.\n\n• 🤖 Captcha...w_sending_without_reply=None, disable_web_page_preview=<Default('link_preview_is_disabled')>, reply_to_message_id=None).text
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 17:52:40 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 17:52:40 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_onboarding_link_uses_actual_instance_and_exposes_precise_rights[child-B] _
+docs/groupguard-rose/evidence/long-running/phase12/configured_caps.py:53: in test_onboarding_link_uses_actual_instance_and_exposes_precise_rights
+    assert 'factory' in notice.text.lower()
+E   assert 'factory' in "🛡 hi <b>alice</b>! i'm <b>group guard</b> — i keep groups clean and safe.\n\n• 🤖 captcha for newcomers, anti-bot & ca...les, 👋 custom welcomes\n• 🌙 night mode, 🧠 ai spam detection, 📒 log channel\n\nadd me to your group and make me admin 👇"
+E    +  where "🛡 hi <b>alice</b>! i'm <b>group guard</b> — i keep groups clean and safe.\n\n• 🤖 captcha for newcomers, anti-bot & ca...les, 👋 custom welcomes\n• 🌙 night mode, 🧠 ai spam detection, 📒 log channel\n\nadd me to your group and make me admin 👇" = <built-in method lower of str object at 0x18fd58b0>()
+E    +    where <built-in method lower of str object at 0x18fd58b0> = "🛡 Hi <b>Alice</b>! I'm <b>Group Guard</b> — I keep groups clean and safe.\n\n• 🤖 Captcha for newcomers, anti-bot & CA...les, 👋 custom welcomes\n• 🌙 Night mode, 🧠 AI spam detection, 📒 log channel\n\nAdd me to your group and make me admin 👇".lower
+E    +      where "🛡 Hi <b>Alice</b>! I'm <b>Group Guard</b> — I keep groups clean and safe.\n\n• 🤖 Captcha for newcomers, anti-bot & CA...les, 👋 custom welcomes\n• 🌙 Night mode, 🧠 AI spam detection, 📒 log channel\n\nAdd me to your group and make me admin 👇" = SendMessage(chat_id=20, text="🛡 Hi <b>Alice</b>! I'm <b>Group Guard</b> — I keep groups clean and safe.\n\n• 🤖 Captcha...w_sending_without_reply=None, disable_web_page_preview=<Default('link_preview_is_disabled')>, reply_to_message_id=None).text
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 17:52:41 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 17:52:41 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+=========================== short test summary info ============================
+FAILED docs/groupguard-rose/evidence/long-running/phase12/configured_caps.py::test_onboarding_link_uses_actual_instance_and_exposes_precise_rights[child-A]
+FAILED docs/groupguard-rose/evidence/long-running/phase12/configured_caps.py::test_onboarding_link_uses_actual_instance_and_exposes_precise_rights[child-B]
+2 failed, 4 passed in 9.99s

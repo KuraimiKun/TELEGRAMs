@@ -1,0 +1,274 @@
+# Production stack for a single VPS. Copy .env.example to .env and fill in every REQUIRED value first.
+# First deploy:   ./deploy/init-letsencrypt.sh   (obtains the TLS certificate, then `docker compose up -d`)
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+x-app: &app
+  build: .
+  image: telegram-bots-platform:${APP_VERSION:-latest}
+  restart: unless-stopped
+  group_add:
+    - "101"
+  stop_grace_period: 40s
+  env_file: .env
+  logging: *logging
+  environment: &app-env
+    DATABASE_URL: "postgresql+asyncpg://${POSTGRES_USER:-bot}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-bot}"
+    REDIS_URL: "redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis:6379/0"
+    REDIS_CACHE_URL: "redis://:${REDIS_PASSWORD:?set REDIS_PASSWORD}@redis-cache:6379/0"
+    TELEGRAM_API_URL: "http://telegram-bot-api:8081"
+    TELEGRAM_API_LOCAL_FILES: "true"
+    DATA_DIR: /app/data
+    LOG_JSON: "${LOG_JSON:-true}"
+  depends_on: &app-deps
+    migrate:
+      condition: service_completed_successfully
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    redis-cache:
+      condition: service_healthy
+    telegram-bot-api:
+      condition: service_healthy
+
+services:
+  # ------------------------------------------------------------------ infrastructure
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    logging: *logging
+    command: ["postgres", "-c", "max_connections=200", "-c", "shared_buffers=256MB"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bot}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-bot}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bot} -d ${POSTGRES_DB:-bot}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits: { memory: 1g }
+
+  # Durable Redis: job queues, FSM state, locks, quotas. Never evicts.
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    logging: *logging
+    command: >
+      redis-server --appendonly yes --maxmemory 768mb --maxmemory-policy noeviction
+      --requirepass ${REDIS_PASSWORD:?set REDIS_PASSWORD}
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" --no-auth-warning ping | grep PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    deploy:
+      resources:
+        limits: { memory: 1g }
+
+  # Evictable cache Redis: Telegram file_id cache etc. LRU, no persistence needed.
+  redis-cache:
+    image: redis:7-alpine
+    restart: unless-stopped
+    logging: *logging
+    command: >
+      redis-server --save "" --appendonly no --maxmemory 512mb --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD:?set REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" --no-auth-warning ping | grep PONG"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    deploy:
+      resources:
+        limits: { memory: 640m }
+
+  # Local Bot API server: 2 GB uploads for every bot. Pin TELEGRAM_BOT_API_IMAGE to a tested tag in .env.
+  telegram-bot-api:
+    image: ${TELEGRAM_BOT_API_IMAGE:-aiogram/telegram-bot-api:latest}
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID:?set TELEGRAM_API_ID}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:?set TELEGRAM_API_HASH}
+      TELEGRAM_LOCAL: "true"
+    volumes:
+      - bot_api_data:/var/lib/telegram-bot-api
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z 127.0.0.1 8081 || wget -q -O /dev/null http://127.0.0.1:8081/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  # YouTube Proof-of-Origin token provider used by yt-dlp. Pin POT_PROVIDER_IMAGE in .env.
+  pot-provider:
+    image: ${POT_PROVIDER_IMAGE:-brainicism/bgutil-ytdlp-pot-provider:latest}
+    restart: unless-stopped
+    logging: *logging
+    deploy:
+      resources:
+        limits: { memory: 512m }
+
+  # ------------------------------------------------------------------ one-shot schema migration
+  migrate:
+    <<: *app
+    restart: "no"
+    command: ["python", "-m", "core", "migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ------------------------------------------------------------------ application
+  gateway:
+    <<: *app
+    command: ["python", "-m", "core", "gateway"]
+    volumes:
+      - bot_api_data:/var/lib/telegram-bot-api:ro
+      - ./data/socialdownload/cookies:/app/data/socialdownload/cookies
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/health/ready', timeout=4).status == 200 else 1)"]
+      interval: 15s
+      timeout: 6s
+      retries: 4
+      start_period: 30s
+    deploy:
+      resources:
+        limits: { memory: 768m, cpus: "1.0" }
+
+  worker-socialdownload:
+    <<: *app
+    command: ["python", "-m", "core", "run", "socialdownload", "worker"]
+    environment:
+      <<: *app-env
+      SOCIALDOWNLOAD_POT_PROVIDER_URL: "http://pot-provider:4416"
+    volumes:
+      - bot_api_data:/var/lib/telegram-bot-api:ro
+      - downloads:/app/data/socialdownload/downloads
+      - public_files:/app/data/socialdownload/public
+      - ./data/socialdownload/cookies:/app/data/socialdownload/cookies
+    healthcheck:
+      test: ["CMD", "python", "-m", "core", "healthcheck", "socialdownload-worker"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      replicas: ${SOCIALDOWNLOAD_WORKER_REPLICAS:-1}
+      resources:
+        limits: { memory: 2g, cpus: "2.0" }
+
+  worker-doctools:
+    <<: *app
+    command: ["python", "-m", "core", "run", "doctools", "worker"]
+    # Start document processing only when this optional bot is configured:
+    # docker compose --profile doctools up -d --build
+    profiles: ["doctools"]
+    volumes:
+      - bot_api_data:/var/lib/telegram-bot-api:ro
+    healthcheck:
+      test: ["CMD", "python", "-m", "core", "healthcheck", "doctools-worker"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 1g, cpus: "2.0" }
+
+  scheduler:
+    <<: *app
+    command: ["python", "-m", "core", "scheduler"]
+    volumes:
+      - downloads:/app/data/socialdownload/downloads
+      - public_files:/app/data/socialdownload/public
+    healthcheck:
+      test: ["CMD", "python", "-m", "core", "healthcheck", "scheduler"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 512m }
+
+  # ------------------------------------------------------------------ edge
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    logging: *logging
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN}
+      DIRECT_LINK_SECRET: ${DIRECT_LINK_SECRET:?set DIRECT_LINK_SECRET}
+    volumes:
+      - ./deploy/nginx/templates:/etc/nginx/templates:ro
+      - public_files:/var/www/dl/socialdownload:ro
+      - certbot_conf:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+    # Reload periodically to pick up renewed certificates.
+    command: ["/bin/sh", "-c", "/docker-entrypoint.d/20-envsubst-on-templates.sh && (while :; do sleep 6h; nginx -s reload; done & exec nginx -g 'daemon off;')"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/health/live || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      gateway:
+        condition: service_healthy
+
+  certbot:
+    image: certbot/certbot:v2.11.0
+    restart: unless-stopped
+    logging: *logging
+    volumes:
+      - certbot_conf:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: ["/bin/sh", "-c", "trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --quiet; sleep 12h & wait $${!}; done"]
+
+  # Nightly Postgres dump + cookies archive, 14-day retention, written to ./backups on the host.
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    logging: *logging
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-bot}
+      PGPASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB:-bot}
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+      BACKUP_HOUR_UTC: ${BACKUP_HOUR_UTC:-3}
+    volumes:
+      - ./deploy/backup.sh:/usr/local/bin/backup.sh:ro
+      - ./backups:/backups
+      - ./data:/data:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/backup.sh", "--loop"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  bot_api_data:
+  pgdata:
+  redisdata:
+  downloads:
+  public_files:
+  certbot_conf:
+  certbot_www:

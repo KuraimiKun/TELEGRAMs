@@ -1,0 +1,155 @@
+.................................................................FFF...F [ 97%]
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_ test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle[standalone] _
+tests/bots/groupguard/test_phase08.py:593: in test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle
+    assert job.status == 'failed' and job.error_code == 'TelegramRetryAfter'
+E   AssertionError: assert ('failed' == 'failed'
+E     
+E       failed and 'retry_after' == 'TelegramRetryAfter'
+E     
+E     - TelegramRetryAfter
+E     + retry_after)
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:31:35 [info     ] gg_step_failed                 code=retry_after operation=content_send retry_after=1
+_ test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle[child-A] _
+tests/bots/groupguard/test_phase08.py:593: in test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle
+    assert job.status == 'failed' and job.error_code == 'TelegramRetryAfter'
+E   AssertionError: assert ('failed' == 'failed'
+E     
+E       failed and 'retry_after' == 'TelegramRetryAfter'
+E     
+E     - TelegramRetryAfter
+E     + retry_after)
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:31:35 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:31:35 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:31:35 [info     ] gg_step_failed                 code=retry_after operation=content_send retry_after=1
+_ test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle[child-B] _
+tests/bots/groupguard/test_phase08.py:593: in test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle
+    assert job.status == 'failed' and job.error_code == 'TelegramRetryAfter'
+E   AssertionError: assert ('failed' == 'failed'
+E     
+E       failed and 'retry_after' == 'TelegramRetryAfter'
+E     
+E     - TelegramRetryAfter
+E     + retry_after)
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:31:36 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:31:36 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:31:36 [info     ] gg_step_failed                 code=retry_after operation=content_send retry_after=1
+_ test_bot_restricted_nonmember_cannot_gain_public_command_authority[standalone] _
+tests/bots/groupguard/test_phase08.py:623: in test_bot_restricted_nonmember_cannot_gain_public_command_authority
+    can_pin_messages=False, can_manage_topics=False) if m.user_id == 88 else prior(m)
+bots/groupguard/authz.py:72: in authorize
+    member = await perms.fresh_member(ctx,target_chat_id,actor.bot_sender_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bots/groupguard/perms.py:106: in fresh_member
+    member = await ctx.bot.get_chat_member(chat_id, user_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/bot.py:1687: in get_chat_member
+    return await self(call, request_timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/bot.py:515: in __call__
+    return await self.session(self, method, timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/session/base.py:259: in __call__
+    return cast(TelegramType, await middleware(bot, method))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/conftest.py:70: in make_request
+    result = await self._respond(method)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/conftest.py:81: in _respond
+    result = override(method) if callable(override) else override
+             ^^^^^^^^^^^^^^^^
+tests/bots/groupguard/test_phase08.py:615: in <lambda>
+    await env.extras['guard'].update_config(GROUP, bot2bot_mode='all')
+E   pydantic_core._pydantic_core.ValidationError: 2 validation errors for ChatMemberRestricted
+E   can_react_to_messages
+E     Field required [type=missing, input_value={'user': User(id=88, is_b...n_manage_topics': False}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+E   can_edit_tag
+E     Field required [type=missing, input_value={'user': User(id=88, is_b...n_manage_topics': False}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+_ test_bot_restricted_nonmember_cannot_gain_public_command_authority[child-A] __
+tests/bots/groupguard/test_phase08.py:623: in test_bot_restricted_nonmember_cannot_gain_public_command_authority
+    can_pin_messages=False, can_manage_topics=False) if m.user_id == 88 else prior(m)
+bots/groupguard/authz.py:72: in authorize
+    member = await perms.fresh_member(ctx,target_chat_id,actor.bot_sender_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bots/groupguard/perms.py:106: in fresh_member
+    member = await ctx.bot.get_chat_member(chat_id, user_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/bot.py:1687: in get_chat_member
+    return await self(call, request_timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/bot.py:515: in __call__
+    return await self.session(self, method, timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/session/base.py:259: in __call__
+    return cast(TelegramType, await middleware(bot, method))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/conftest.py:70: in make_request
+    result = await self._respond(method)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/conftest.py:81: in _respond
+    result = override(method) if callable(override) else override
+             ^^^^^^^^^^^^^^^^
+tests/bots/groupguard/test_phase08.py:615: in <lambda>
+    await env.extras['guard'].update_config(GROUP, bot2bot_mode='all')
+E   pydantic_core._pydantic_core.ValidationError: 2 validation errors for ChatMemberRestricted
+E   can_react_to_messages
+E     Field required [type=missing, input_value={'user': User(id=88, is_b...n_manage_topics': False}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+E   can_edit_tag
+E     Field required [type=missing, input_value={'user': User(id=88, is_b...n_manage_topics': False}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:31:38 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:31:38 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_bot_restricted_nonmember_cannot_gain_public_command_authority[child-B] __
+tests/bots/groupguard/test_phase08.py:623: in test_bot_restricted_nonmember_cannot_gain_public_command_authority
+    can_pin_messages=False, can_manage_topics=False) if m.user_id == 88 else prior(m)
+bots/groupguard/authz.py:72: in authorize
+    member = await perms.fresh_member(ctx,target_chat_id,actor.bot_sender_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+bots/groupguard/perms.py:106: in fresh_member
+    member = await ctx.bot.get_chat_member(chat_id, user_id)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/bot.py:1687: in get_chat_member
+    return await self(call, request_timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/bot.py:515: in __call__
+    return await self.session(self, method, timeout=request_timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/aiogram/client/session/base.py:259: in __call__
+    return cast(TelegramType, await middleware(bot, method))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/conftest.py:70: in make_request
+    result = await self._respond(method)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/conftest.py:81: in _respond
+    result = override(method) if callable(override) else override
+             ^^^^^^^^^^^^^^^^
+tests/bots/groupguard/test_phase08.py:615: in <lambda>
+    await env.extras['guard'].update_config(GROUP, bot2bot_mode='all')
+E   pydantic_core._pydantic_core.ValidationError: 2 validation errors for ChatMemberRestricted
+E   can_react_to_messages
+E     Field required [type=missing, input_value={'user': User(id=88, is_b...n_manage_topics': False}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+E   can_edit_tag
+E     Field required [type=missing, input_value={'user': User(id=88, is_b...n_manage_topics': False}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/missing
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:31:39 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:31:39 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+=========================== short test summary info ============================
+FAILED tests/bots/groupguard/test_phase08.py::test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle[standalone]
+FAILED tests/bots/groupguard/test_phase08.py::test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle[child-A]
+FAILED tests/bots/groupguard/test_phase08.py::test_posted_broadcast_attachment_is_not_repeated_after_companion_throttle[child-B]
+FAILED tests/bots/groupguard/test_phase08.py::test_bot_restricted_nonmember_cannot_gain_public_command_authority[standalone]
+FAILED tests/bots/groupguard/test_phase08.py::test_bot_restricted_nonmember_cannot_gain_public_command_authority[child-A]
+FAILED tests/bots/groupguard/test_phase08.py::test_bot_restricted_nonmember_cannot_gain_public_command_authority[child-B]
+6 failed, 68 passed in 36.33s

@@ -1,0 +1,28 @@
+............FFF.............................                             [100%]
+=================================== FAILURES ===================================
+_ test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement[standalone] _
+tests/bots/groupguard/test_phase10.py:137: in test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement
+    await env.extras['guard'].approve(GROUP, 30)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: GuardService.approve() missing 2 required positional arguments: 'reason' and 'by_id'
+_ test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement[child-A] _
+tests/bots/groupguard/test_phase10.py:137: in test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement
+    await env.extras['guard'].approve(GROUP, 30)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: GuardService.approve() missing 2 required positional arguments: 'reason' and 'by_id'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 02:13:28 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 02:13:28 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement[child-B] _
+tests/bots/groupguard/test_phase10.py:137: in test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement
+    await env.extras['guard'].approve(GROUP, 30)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: GuardService.approve() missing 2 required positional arguments: 'reason' and 'by_id'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 02:13:29 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 02:13:29 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+=========================== short test summary info ============================
+FAILED tests/bots/groupguard/test_phase10.py::test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement[standalone]
+FAILED tests/bots/groupguard/test_phase10.py::test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement[child-A]
+FAILED tests/bots/groupguard/test_phase10.py::test_passive_speech_beats_approval_and_quiet_does_not_disable_enforcement[child-B]
+3 failed, 41 passed in 14.20s

@@ -1,0 +1,23 @@
+157	57	bots/groupguard/actions.py
+114	0	bots/groupguard/authz.py
+70	0	bots/groupguard/contracts.py
+46	103	bots/groupguard/handlers/content.py
+120	255	bots/groupguard/handlers/moderation.py
+120	104	bots/groupguard/handlers/panel.py
+78	46	bots/groupguard/handlers/welcome.py
+45	19	bots/groupguard/jobs.py
+40	0	bots/groupguard/locales/ar/messages.ftl
+40	0	bots/groupguard/locales/en/messages.ftl
+3	2	bots/groupguard/module.py
+277	0	bots/groupguard/operations.py
+172	46	bots/groupguard/perms.py
+37	17	bots/groupguard/protect.py
+155	0	bots/groupguard/reviews.py
+2	2	bots/groupguard/service.py
+10	0	tests/bots/groupguard/conftest.py
+32	6	tests/bots/groupguard/test_groupguard.py
+699	0	tests/bots/groupguard/test_phase01a.py
+10	2	tests/conftest.py
+7	4	tests/e2e/test_platform_flow.py
+38	0	tests/integration/test_groupguard_review.py
+22 production/test/locale files; 2272 insertions, 663 deletions versus HEAD (git diff plus new file line counts). Audit documentation compared separately to preserved Phase0B snapshot.

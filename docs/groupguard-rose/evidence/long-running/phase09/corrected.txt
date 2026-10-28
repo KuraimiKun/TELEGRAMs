@@ -1,0 +1,56 @@
+....FF....FF................................                             [100%]
+=================================== FAILURES ===================================
+_ test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[child-A] _
+tests/bots/groupguard/test_phase09.py:69: in test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct
+    assert await federations.admins(env, fed.id) == [MEMBER, 30]
+E   assert [20] == [20, 30]
+E
+E     Right contains one more item: 30
+E     Use -v to get more diff
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:48:26 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:48:26 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:48:26 [info     ] admin_action                   action=gg_fed_delivery admin_id=20 bot=c710011 bot_id=710011 target=ae3638ee-b526-4ebc-a0a0-c1d1c2862c1b update_id=5075 user_id=20
+_ test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[child-B] _
+tests/bots/groupguard/test_phase09.py:69: in test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct
+    assert await federations.admins(env, fed.id) == [MEMBER, 30]
+E   assert [20] == [20, 30]
+E
+E     Right contains one more item: 30
+E     Use -v to get more diff
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:48:27 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:48:27 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:48:27 [info     ] admin_action                   action=gg_fed_delivery admin_id=20 bot=c710012 bot_id=710012 target=e5bfa3d1-fe1b-4733-8fe5-cf75f6a93899 update_id=5085 user_id=20
+_ test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[child-A] _
+tests/bots/groupguard/test_phase09.py:111: in test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans
+    assert await session.get(GuardFedChat, (env.bot_id, GROUP)) is None
+E   assert <bots.groupguard.models.GuardFedChat object at 0x7f9c5b3128a0> is None
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:48:30 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:48:30 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:48:31 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot=c710011 bot_id=710011 target=0ef2d6f8-04da-4758-a9a1-78d3bc8a554a update_id=5155 user_id=10
+2026-10-12 23:48:31 [info     ] admin_action                   action=gg_ban admin_id=10 bot=c710011 bot_id=710011 target=-1001234567890 update_id=5157 user_id=10
+2026-10-12 23:48:31 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot=c710011 bot_id=710011 target=0ef2d6f8-04da-4758-a9a1-78d3bc8a554a update_id=5166 user_id=10
+2026-10-12 23:48:31 [info     ] admin_action                   action=gg_fed_confirmation admin_id=10 bot=c710011 bot_id=710011 target=0ef2d6f8-04da-4758-a9a1-78d3bc8a554a update_id=5166 user_id=10
+_ test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[child-B] _
+tests/bots/groupguard/test_phase09.py:111: in test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans
+    assert await session.get(GuardFedChat, (env.bot_id, GROUP)) is None
+E   assert <bots.groupguard.models.GuardFedChat object at 0x7f9c5899b0b0> is None
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:48:31 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:48:31 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:48:31 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot=c710012 bot_id=710012 target=50fbb9ab-6286-43b6-b2a3-be17b37bcac8 update_id=5173 user_id=10
+2026-10-12 23:48:31 [info     ] admin_action                   action=gg_ban admin_id=10 bot=c710012 bot_id=710012 target=-1001234567890 update_id=5175 user_id=10
+2026-10-12 23:48:31 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot=c710012 bot_id=710012 target=50fbb9ab-6286-43b6-b2a3-be17b37bcac8 update_id=5184 user_id=10
+2026-10-12 23:48:31 [info     ] admin_action                   action=gg_fed_confirmation admin_id=10 bot=c710012 bot_id=710012 target=50fbb9ab-6286-43b6-b2a3-be17b37bcac8 update_id=5184 user_id=10
+=========================== short test summary info ============================
+FAILED tests/bots/groupguard/test_phase09.py::test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[child-A]
+FAILED tests/bots/groupguard/test_phase09.py::test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[child-B]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[child-A]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[child-B]
+4 failed, 40 passed in 18.55s

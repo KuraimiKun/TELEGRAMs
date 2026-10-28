@@ -1,0 +1,10 @@
+.................F..                                                     [100%]
+=================================== FAILURES ===================================
+_____________________ test_bot_code_keys_exist[groupguard] _____________________
+tests/test_locales.py:77: in test_bot_code_keys_exist
+    assert not missing, f"{bot} uses undefined keys: {sorted(missing)}"
+E   AssertionError: groupguard uses undefined keys: ['gg-none']
+E   assert not {'gg-none'}
+=========================== short test summary info ============================
+FAILED tests/test_locales.py::test_bot_code_keys_exist[groupguard] - Assertio...
+1 failed, 19 passed in 0.35s

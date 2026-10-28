@@ -1,0 +1,73 @@
+import asyncio,json,tempfile
+from pathlib import Path
+from datetime import UTC,datetime
+import fakeredis.aioredis
+from sqlalchemy.ext.asyncio import create_async_engine,async_sessionmaker
+from aiogram.types import Chat,Message,Update
+from aiogram.exceptions import TelegramBadRequest
+from aiogram.methods import BanChatMember
+from core.sdk.registry import discover
+from core.db.base import Base
+from core.db.models import Bot as BotRecord
+from core.runtime.dispatcher import build_dispatcher
+from tests.conftest import build_test_ctx,RecordingSession,BOT_ID,tg_user,message_update,callback_update
+from tests.bots.groupguard.test_groupguard import group_msg,plain,GROUP,ADMIN,MEMBER,NEWBIE
+from bots.groupguard import perms
+from bots.groupguard.service import GuardService
+from bots.groupguard.handlers import welcome
+
+async def main():
+ discover()
+ engine=create_async_engine('sqlite+aiosqlite:///:memory:')
+ async with engine.begin() as c: await c.run_sync(Base.metadata.create_all)
+ sm=async_sessionmaker(engine,expire_on_commit=False)
+ async with sm() as s:
+  s.add(BotRecord(id=BOT_ID,slug='groupguard',title='Guard',active=True));await s.commit()
+ r=fakeredis.aioredis.FakeRedis();api=RecordingSession()
+ from aiogram.types import ChatMemberOwner
+ api.responses['GetChatAdministrators']=[ChatMemberOwner(user=tg_user(ADMIN),is_anonymous=False)]
+ ctx=await build_test_ctx(discover(['groupguard'])[0],sm,r,api,Path(tempfile.mkdtemp()))
+ svc=ctx.extras['guard'];dp=build_dispatcher(ctx)
+ msg=plain(MEMBER).model_copy(update={'sender_chat':Chat(id=GROUP,type='supergroup')})
+ print('P01 anonymous rights:',await perms.sender_rights(ctx,msg))
+ await svc.update_config(GROUP,locks=['links'],blocklist=['casino'],flood_count=0)
+ u=group_msg('casino https://example.com',MEMBER)
+ await dp.feed_update(ctx.bot,Update(update_id=u.update_id,edited_message=u.message))
+ print('P02 edited deletes:',len(api.calls('DeleteMessage')))
+ await dp.feed_update(ctx.bot,group_msg('/terms casino',MEMBER))
+ print('P03 core command deletes:',len(api.calls('DeleteMessage')),'core responded:',bool(api.calls('SendMessage')))
+ await dp.feed_update(ctx.bot,message_update(f'/start gs_{GROUP}',user_id=ADMIN))
+ print('P04 gs link shows home:', 'Add' in api.calls('SendMessage')[-1].text, 'group panel:', bool(api.calls('SendMessage')[-1].reply_markup and any('gg:set' in (b.callback_data or '') for row in api.calls('SendMessage')[-1].reply_markup.inline_keyboard for b in row)))
+ replica=GuardService(sm,BOT_ID);await replica.config(GROUP)
+ await svc.update_config(GROUP,goodbye=True)
+ await replica.update_config(GROUP,welcome=False)
+ check=GuardService(sm,BOT_ID)
+ print('P05 lost config goodbye:',(await check.config(GROUP)).goodbye)
+ await svc.update_config(GROUP,warn_limit=1)
+ api.responses['BanChatMember']=TelegramBadRequest(method=BanChatMember(chat_id=GROUP,user_id=MEMBER),message='no rights')
+ await dp.feed_update(ctx.bot,group_msg('/warn rude',ADMIN,reply_to=plain(MEMBER)))
+ print('P06 failed ban warnings remaining:',await svc.count_warns(GROUP,MEMBER),'announced:',api.calls('SendMessage')[-1].text)
+ api.responses.pop('BanChatMember')
+ # Expiry captures stale pending state, then a success removes it before expiry resumes.
+ key=welcome.pending_key(ctx,GROUP,NEWBIE)
+ await r.set(key,json.dumps({'msg':90,'answer':0,'tries':0}))
+ captured=asyncio.Event();resume=asyncio.Event();original_get=r.get
+ async def intercepted_get(k):
+  value=await original_get(k)
+  if k==key:
+   captured.set();await resume.wait()
+  return value
+ r.get=intercepted_get
+ task=asyncio.create_task(welcome.expire_captcha(ctx,GROUP,NEWBIE));await captured.wait()
+ await r.delete(key);await ctx.bot.restrict_chat_member(GROUP,NEWBIE,permissions=__import__('bots.groupguard.actions',fromlist=['OPEN']).OPEN)
+ resume.set();await task;r.get=original_get
+ print('P07 expired stale state kicks after success:',api.calls('BanChatMember')[-1].user_id==NEWBIE)
+ # Old callback has no challenge generation/message binding: same user rejoining can solve new button challenge.
+ await r.set(key,json.dumps({'msg':91,'answer':0,'tries':0}))
+ await svc.update_config(GROUP,captcha='button')
+ await dp.feed_update(ctx.bot,callback_update(f'gg:cap:{GROUP}:{NEWBIE}:ok',user_id=NEWBIE))
+ print('P08 old/unrelated message callback consumes new challenge:',not await r.exists(key))
+ print('P09 dispatcher subscribed types:',dp.resolve_used_update_types())
+ print('P10 invalid temporary duration parsed as reason:',perms.parse_duration('10s'))
+ await r.aclose();await engine.dispose()
+asyncio.run(main())

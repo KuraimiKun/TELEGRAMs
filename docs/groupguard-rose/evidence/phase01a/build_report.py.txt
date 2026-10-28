@@ -1,0 +1,104 @@
+from pathlib import Path
+import csv,difflib,hashlib,importlib.metadata,json,shutil,subprocess,sys,tarfile
+root=Path('docs/groupguard-rose'); evidence=root/'evidence/phase01a';evidence.mkdir(parents=True,exist_ok=True)
+logs={'pip-check.log':'/tmp/phase1a-pip.txt','bots.log':'/tmp/phase1a-bots.txt','ruff.log':'/tmp/phase1a-ruff.txt','mypy.log':'/tmp/phase1a-mypy.txt','focused.log':'/tmp/phase1a-focused-final2.txt','full.log':'/tmp/phase1a-full-final2.txt','services.log':'/tmp/phase1a-services-final2.txt','e2e.log':'/tmp/phase1a-e2e-final2.txt','panel-branches.log':'/tmp/phase1a-panel-final.txt','redis-claim.log':'/tmp/phase1a-redis.txt','attempt-full.log':'/tmp/phase1a-full.txt','attempt-e2e.log':'/tmp/phase1a-e2e.txt','attempt-locales.log':'/tmp/phase1a-focused.txt'}
+for dest,source in logs.items():shutil.copyfile(source,evidence/dest)
+assert '150 passed' in (evidence/'focused.log').read_text()
+assert '1 failed, 371 passed, 4 skipped' in (evidence/'full.log').read_text()
+assert (evidence/'full.log').read_text().count('FAILED tests/')==1
+assert '3 passed' in (evidence/'services.log').read_text() and '1 passed' in (evidence/'e2e.log').read_text()
+versions={'Python':sys.version.split()[0]};versions.update({n:importlib.metadata.version(n) for n in ['aiogram','sqlalchemy','asyncpg','alembic','redis','fakeredis','pytest','pytest-asyncio','ruff','mypy']});versions.update(PostgreSQL='16.15',Redis_server='7.4.11');(evidence/'versions.json').write_text(json.dumps(versions,indent=2)+'\n')
+(evidence/'cleanup.log').write_text('Dedicated services: groupguard-phase00b-postgres (127.0.0.1:55432), groupguard-phase00b-redis (127.0.0.1:56379). Reused only prior disposable containers, not telegram-onboarding-* services.\nBefore drop: bot, gg_phase00b_integration, gg_phase01a_integration, postgres.\nDROP DATABASE gg_phase01a_integration: exit0 DROP DATABASE. Runtime harness-created database already removed.\nRedis DBSIZE DB0=0 DB1=0.\nDocker stop both dedicated containers: exit0; stopped. Prior databases preserved. No production credentials/data.\n')
+sha=[]
+for path in ['/workspace/attachments/47c190aa-6279-4626-9dde-8ebe856e06bb/PHASE_01A_HANDOFF.zip','/workspace/groupguard-phase00b-original.tar.gz']:
+ sha.append(hashlib.sha256(Path(path).read_bytes()).hexdigest()+'  '+path)
+(evidence/'handoff-integrity.log').write_text('\n'.join(sha)+'\nAll six ZIP member names inspected; five file sizes/SHA256 matched supplied MANIFEST.json before implementation. Controlling pasted request preserved separately from ZIP prompt.\n')
+files=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()+subprocess.check_output(['git','ls-files','--others','--exclude-standard','bots/groupguard','tests'],text=True).splitlines()
+files=sorted(files)
+numstats=[];total_add=total_del=0
+for name in files:
+ old=subprocess.run(['git','show','HEAD:'+name],text=True,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL).stdout.splitlines(keepends=True)
+ new=Path(name).read_text().splitlines(keepends=True)
+ diff=list(difflib.unified_diff(old,new,n=3));a=sum(x.startswith('+') and not x.startswith('+++') for x in diff);d=sum(x.startswith('-') and not x.startswith('---') for x in diff);total_add+=a;total_del+=d;numstats.append(f'{a}\t{d}\t{name}')
+(evidence/'diffstat.txt').write_text('\n'.join(numstats)+f'\n{len(files)} production/test/locale files; {total_add} insertions, {total_del} deletions versus HEAD (new files included). Diff algorithm used by this preserved generator may vary from final git-native numstat; the final diffstat.txt is authoritative. Audit documentation compared separately to preserved Phase0B snapshot.\n')
+(evidence/'code-manifest.sha256').write_text(''.join(hashlib.sha256(Path(n).read_bytes()).hexdigest()+'  '+n+'\n' for n in files))
+(evidence/'git-state.log').write_text(subprocess.check_output(['git','status','--short'],text=True)+'\nHEAD '+subprocess.check_output(['git','rev-parse','HEAD'],text=True)+subprocess.check_output(['git','diff','--stat'],text=True))
+(evidence/'build_ledger.py.txt').write_text(Path('/tmp/update_phase1a_ledger.py').read_text())
+count=json.loads((root/'LEDGER_COUNTS.json').read_text());rows=list(csv.DictReader((root/'FEATURE_MATRIX.csv').open()))
+counts='## Feature evidence and counts\n\n'
+counts+='| Stable ID | Delivered foundation | Status |\n| --- | --- | --- |\n'
+for r in rows:
+ if r['phase']=='1A':counts+='| '+r['id']+' | '+r['semantics_defaults'].replace('|','\\|')+' | tested subset — Phase 1A gate |\n'
+counts+='\nWhole ledger: **818 rows**, all150 old IDs and51 planning-area maps retained;807 canonical behavior IDs (spellings/rosters are not separate completed features). Implementation: '+', '.join(f'{v} {k}' for k,v in count['implementation'].items())+'. Current scope:10 Phase1A foundation rows, all10 tested subset; parent later-feature rows stay partial. Specification statuses: '+', '.join(f'{v} {k}' for k,v in count['specification'].items())+'. Phase counts: '+', '.join(f'{k}={v}' for k,v in count['phase'].items())+'.\n\n'
+# Actual canonical count comes from ledger, not a hardcoded completion metric.
+counts=counts.replace('807 canonical',str(count['canonical_behavior_ids'])+' canonical')
+purposes={
+'bots/groupguard/contracts.py':'Frozen actor/right/step/aggregate contracts with explicit completion; bool conversion rejects.',
+'bots/groupguard/authz.py':'Fresh human/bot authorization and scoped server-created callback bindings.',
+'bots/groupguard/perms.py':'Normalized rights, display-only cache, safe observed target resolver and separate strict sanction timer parser.',
+'bots/groupguard/operations.py':'Immutable allowlisted mutation plan, rights union, shared direct/review executor and accurate private operation audit.',
+'bots/groupguard/reviews.py':'120-second opaque reviews, immutable payload/scope checks, atomic Lua claim and final authorization; truthful consumed-message result.',
+'bots/groupguard/actions.py':'Sanitized explicit API outcomes, deadline safety, complete kicks, real-default unmute and honest deletion acknowledgements.',
+'bots/groupguard/handlers/moderation.py':'Existing aliases target/timer validation, full preflight, truthful sanction/warning/undo/delete/pin/log results and bound unwarn button.',
+'bots/groupguard/handlers/content.py':'Existing rule/welcome/note/filter/lock/blocklist writes through immutable authorized operations.',
+'bots/groupguard/handlers/panel.py':'Bound PM target/owner panel and fresh change-info per branch; accurate ancillary edit evidence; original gs shadow retained.',
+'bots/groupguard/handlers/welcome.py':'Current automated policy/capabilities, truthful CAS/kick/CAPTCHA/join-request results and scoped challenge binding.',
+'bots/groupguard/protect.py':'Fresh current protection policy, internal compound rights unions and truthful flood/blocklist/newbie/AI outcomes.',
+'bots/groupguard/jobs.py':'Restorable snapshot before night close, exact snapshot restoration, fresh bot capability and truthful expiry counts.',
+'bots/groupguard/service.py':'Opt-in uncached config read; schema/general transaction logic unchanged.',
+'bots/groupguard/module.py':'Review callback router added inside existing Group Guard router; core/start precedence/subscriptions unchanged.',
+'bots/groupguard/locales/en/messages.ftl':'New authorization/review/outcome/deletion messages and operation labels in English.',
+'bots/groupguard/locales/ar/messages.ftl':'Matching Arabic keys/placeholders and operation labels.',
+ 'tests/conftest.py':'Record actual bot-authored message identity/chat/thread and edit acknowledgements for binding/outcome tests.',
+ 'tests/bots/groupguard/conftest.py':'Test-only fast-conversation throttle passthrough, matching existing factory test technique.',
+ 'tests/bots/groupguard/test_groupguard.py':'Explicit current capabilities/default permissions; real sent-message callback fixture; preserved existing scenarios.',
+ 'tests/bots/groupguard/test_phase01a.py':'Nine acceptance groups plus error/ownership/ancillary branches, standalone and actual child runtimes.',
+ 'tests/integration/test_groupguard_review.py':'40 concurrent real-Redis approvals, one actual recorded sanction; empty dedicated Redis check/cleanup.',
+ 'tests/e2e/test_platform_flow.py':'Explicit current aiogram capability fields; CAPTCHA callback uses actual returned bot/message identity; original runtime coverage retained.'}
+changed='## Changed artifacts\n\nNo migrations or dependency changes. **'+str(len(files))+' production/test/locale files; '+str(total_add)+' insertions, '+str(total_del)+' deletions versus HEAD, including untracked new files.** Exact per-file numstat and SHA256 are in evidence/phase01a/.\n\n| Changed path | Purpose |\n| --- | --- |\n'
+for f in files:changed+='| '+f+' | '+purposes[f]+' |\n'
+changed+='\nAudit metadata changed: FEATURE_MATRIX.csv/.md and LEDGER_COUNTS.json reconcile four original foundation rows, add six foundation acceptance rows, narrow Q01 and correct11 S32 phase owners; ARCHITECTURE.md, DECISIONS.md, SOURCE_COVERAGE.md, PLAN.md append implemented contracts/local policies/provenance/deferred handoff; MANIFEST.sha256 refreshed. Reports PHASE_00/00B and original history/evidence are preserved.\n\nSource copies added (every file): sources/PHASE_00B_REVIEW.md, PHASE_01A_SOURCE_ADDENDUM.md, PHASE_01A_HANDOFF_README.md, PHASE_01A_PROMPT.md, PHASE_01A_REPORT_TEMPLATE.md, PHASE_01A_HANDOFF_MANIFEST.json, PHASE_01A_REQUEST.md. reports/PHASE_01A.md is this self-contained report. evidence/phase01a contains '+', '.join(sorted(p.name for p in evidence.iterdir()))+'.\n\n'
+checks='''## Executed checks and environment
+
+All commands ran in /workspace/TELEGRAMBOTS with established .venv, no dependency changes. Execution date11 October2026 UTC /12 October Asia/Jakarta. Python3.12.14; aiogram3.31.0; SQLAlchemy2.1.4; asyncpg0.32.0; Alembic1.20.0; redis-py7.4.1; fakeredis2.39.0; pytest9.1.1; pytest-asyncio1.4.0; Ruff0.17.0; mypy2.4.0. Disposable PostgreSQL16.15 and Redis7.4.11. SQLite/fakeredis/recording Telegram underpin unit tests; PostgreSQL migrations and Lua concurrency also ran on actual disposable services. Runtime e2e runs real gateway/scheduler/worker and local mock HTTP Bot API; no live Telegram/Rose/CAS/AI claims.
+
+| Exact final command | Prerequisites | Exit | Result |
+| --- | --- | --- | --- |
+| .venv/bin/python -m pip check | established environment | 0 | No broken requirements found |
+| .venv/bin/python -m core bots | local discovery | 0 | 9 bot contracts discovered |
+| .venv/bin/ruff check . | repository | 0 | All checks passed |
+| .venv/bin/mypy | core/bots | 0 | 246 source files, no issues |
+| .venv/bin/pytest tests/bots/groupguard tests/bots/factory tests/test_locales.py -q --tb=short | recording API, SQLite/fakeredis, actual child runtime | 0 | 150 passed |
+| .venv/bin/pytest -q --tb=short | default suite; no TEST_* service URLs | 1 | 371 passed, 1 named baseline failure, 4 service-dependent skips |
+| TEST_DATABASE_URL=postgresql+asyncpg://bot@127.0.0.1:55432/gg_phase01a_integration TEST_REDIS_CLAIM_URL=redis://127.0.0.1:56379/1 .venv/bin/pytest tests/integration -q --tb=short | empty disposable DB/Redis; migration roundtrip and real40-way claim | 0 | 3 passed (two PostgreSQL tests, one real Redis claim) |
+| TEST_DATABASE_URL=postgresql+asyncpg://bot@127.0.0.1:55432/bot TEST_REDIS_URL=redis://127.0.0.1:56379/0 .venv/bin/pytest tests/e2e/test_platform_flow.py -q --tb=short | disposable role CREATEDB; empty Redis; localhost mock HTTP Bot API | 0 | 1 passed |
+| .venv/bin/pytest tests/bots/groupguard/test_phase01a.py -k settings_pure_sql_and_bound_panel -q --tb=short | targeted final lock-panel branch check | 0 | 3 passed,111 deselected |
+| git diff --check | final code diff | 0 | no whitespace errors |
+
+The four default skips are the two PostgreSQL tests, existing runtime e2e, and new real-Redis claim test requiring explicit disposable URLs; they were separately executed successfully, not called passed in the default suite. Default -m 'not live' retains the repository's existing live-test policy.
+
+Only final failure:
+
+```
+tests/bots/doctools/test_review.py::test_malformed_html_and_invalid_encoding_are_controlled
+tests/bots/doctools/test_review.py:77: with pytest.raises(CitationError)
+E Failed: DID NOT RAISE CitationError
+```
+
+The supplied Python3.12.14 HTML parser behavior is preserved; no DocTools/test/dependency suppression or repair. Intermediate locale-key lookup and synthetic-CAPTCHA e2e fixture failures were corrected; earlier attempt logs are retained separately from final logs.
+
+Disposable cleanup completed: the newly created gg_phase01a_integration database was dropped, the e2e-created database was removed by its harness, Redis DB0/DB1 both reported zero keys, and only groupguard-phase00b-postgres/redis containers were stopped. Existing onboarding services and previous databases were preserved. No deployment, merge, external messaging, real Telegram moderation or production credentials/data.
+
+## Next prompt handoff
+
+No unfinished authorized Phase1A gate remains under the permitted baseline-failure exception. The reviewer still needs independent source inspection at the cumulative handoff. Use the actual contracts and scope above for1B/1C; no later implementation began. One-use Redis review claims and fresh capability reads do not solve durable delivery, configuration/warning concurrency, CAPTCHA generations or job ownership. Preserve these open rows and the DocTools failure. Published source digest/full-page/live parity remains limited; promotion/topics/federation/reaction/default anonymous-permission options are future work.
+
+Stopped after Phase 1A. Awaiting the reviewer's next prompt.
+'''
+body=Path('/tmp/phase1a-report-body.md').read_text();body=body.replace('## Actual contracts\n',changed+counts+'## Actual contracts\n')
+(root/'reports/PHASE_01A.md').write_text(body+checks)
+(evidence/'build_report.py.txt').write_text(Path('/tmp/build_phase1a_report.py').read_text())
+(evidence/'report-body.md').write_text(Path('/tmp/phase1a-report-body.md').read_text())
+# Additional reproducible evidence files appended after the table are listed here.
+p=root/'reports/PHASE_01A.md';text=p.read_text().replace('evidence/phase01a contains ', 'evidence/phase01a additionally includes build_report.py.txt and report-body.md; it contains ');p.write_text(text)
+print(json.dumps({'files':len(files),'insertions':total_add,'deletions':total_del,'report_bytes':p.stat().st_size,'ledger_rows':count['total_rows'],'canonical_behaviors':count['canonical_behavior_ids']},indent=2))

@@ -1,0 +1,72 @@
+{
+  "ar": {
+    "module_messages": 471,
+    "module_variables_match": true
+  },
+  "de": {
+    "module_messages": 471,
+    "module_variables_match": true,
+    "shared_platform_messages": 159,
+    "shared_platform_variables_match": true
+  },
+  "en": {
+    "module_messages": 471,
+    "module_variables_match": true
+  },
+  "en-gb": {
+    "module_messages": 471,
+    "module_variables_match": true
+  },
+  "en-pt": {
+    "module_messages": 471,
+    "module_variables_match": true
+  },
+  "es": {
+    "module_messages": 471,
+    "module_variables_match": true
+  },
+  "es-ar": {
+    "module_messages": 471,
+    "module_variables_match": true
+  },
+  "fr": {
+    "module_messages": 471,
+    "module_variables_match": true,
+    "shared_platform_messages": 159,
+    "shared_platform_variables_match": true
+  },
+  "id": {
+    "module_messages": 471,
+    "module_variables_match": true,
+    "shared_platform_messages": 159,
+    "shared_platform_variables_match": true
+  },
+  "it": {
+    "module_messages": 471,
+    "module_variables_match": true,
+    "shared_platform_messages": 159,
+    "shared_platform_variables_match": true
+  },
+  "nl": {
+    "module_messages": 471,
+    "module_variables_match": true,
+    "shared_platform_messages": 159,
+    "shared_platform_variables_match": true
+  },
+  "pt": {
+    "module_messages": 471,
+    "module_variables_match": true,
+    "shared_platform_messages": 159,
+    "shared_platform_variables_match": true
+  },
+  "pt-br": {
+    "module_messages": 471,
+    "module_variables_match": true,
+    "shared_platform_messages": 159,
+    "shared_platform_variables_match": true
+  },
+  "ru": {
+    "module_messages": 471,
+    "module_variables_match": true
+  }
+}

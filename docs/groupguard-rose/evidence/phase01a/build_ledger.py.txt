@@ -1,0 +1,62 @@
+import csv, hashlib, json, shutil
+from pathlib import Path
+from collections import Counter
+root=Path('docs/groupguard-rose'); p=root/'FEATURE_MATRIX.csv'
+rows=list(csv.DictReader(p.open())); fields=list(rows[0])
+repairs={
+'GG-FOUND-anonymous':('Sender-chat precedence; no fictional creator; eligible group anonymous requests need attributable human approval.', 'contracts.py;authz.py;reviews.py', 'test_actor_escalation_creator_and_cached_aliases;test_anonymous_review_invalid_attempt_concurrent_one_use_attribution'),
+'GG-FOUND-admin-cache':('300-second administrator cache is display-only; manual human/bot and protected targets use uncached GetChatMember.', 'authz.py;perms.py', 'test_fresh_union_zero_mutations;test_settings_pure_sql_and_bound_panel_scope_revocation'),
+'GG-FOUND-target-resolution':('Positive human reply/entity/observed username/ID; fresh protected targets; stale/ambiguous/unknown username denied; first reason preserved.', 'perms.py', 'test_target_forms_reason_preservation_username_staleness'),
+'GG-FOUND-durations':('Absent/valid/invalid duration; approved local sanction range 60 seconds–365 days; dispatch integer deadline; general 10-second timer preserved.', 'perms.py;actions.py', 'test_invalid_duration_zero_mutations;test_valid_duration_units_deadline_and_general_timer'),
+}
+for r in rows:
+ if r['id'] in repairs:
+  semantic,path,tests=repairs[r['id']]
+  r.update(semantics_defaults=semantic,existing_path_evidence='bots/groupguard/'+path,test_evidence=tests+'; standalone and actual ChildRegistry children 710011/710012 pass',implementation_status='tested subset',gap_status='tested subset',deviations_open_questions='Phase 1A foundation gate only; later command families/lifecycle/Rose parity unverified.')
+ if r['id']=='GG-FOUND-warnings-race':
+  r['semantics_defaults']='Sequential failed sanctions retain warnings; completed sanctions reset even if log fails. Concurrent warning transactions/latest-warning callback replay remain uncoordinated (1C).'
+ if r['id']=='GG-EVT-night':
+  r['semantics_defaults']='Real permission snapshot is stored before closure; no fabricated OPEN. TTL86400, restriction ownership and child night-off recovery remain deferred.'
+ if r['id']=='GG-EVT-captcha-button':
+  r['semantics_defaults']='Bot-created chat/message/thread/user binding; restoration success required for passed notice. No issuance-generation fence; old bound callbacks can still race later generations.'
+ if r['id']=='GG-EVT-warning-remove-button':
+  r['semantics_defaults']='Bot-created warning-message/target binding and fresh restrict rights; removes latest warn. Immutable warning-ID ownership/replay fence deferred to 1C.'
+ if r['id']=='S17-DISABLE-kickme':
+  r.update(specification_status='specified; optional syntax unresolved', implementation_status='not implemented',gap_status='not implemented',semantics_defaults='S17 /disable kickme establishes basic /kickme self-kick purpose: invoking human only, never another target. Phase 2 command; Phase 8 disabling.',dependencies='Phase 2 self-kick implementation; Phase 8 disable integration',deviations_open_questions='Optional arguments/error text/edge cases unspecified; no Phase 1A command implementation.')
+ if r['id']=='Q01':
+  r.update(command_event_syntax='runs/saved/antiflood; kickme optional syntax',semantics_defaults='runs/saved/uncertain antiflood alias meaning unresolved; basic kickme self-kick purpose established, optional syntax unresolved.',deviations_open_questions='Do not invent optional syntax or meanings. /kickme basic purpose resolved by reviewer-supplied S17 addendum.')
+ if r['id'] in {'S32-B01','S32-B02','S32-B03','S32-B04','S32-C-fedpromote','S32-C-feddemote','S32-C-feddemoteme','S32-C-fedreason','S32-C-fednotif','S32-C-setfedlog','S32-C-unsetfedlog'}:
+  r['phase']='9'
+new=[
+('rights-union','Complete caller/bot union before manual and automated compound writes/deletes; creator attribution and missing capability deny.','authz.py;operations.py;protect.py','test_fresh_union_zero_mutations;test_automated_failure_never_announces_false_success'),
+('panel-binding','Server-created bot/target/current-human/message/thread panel scope, fresh change-info per write; no gs routing fix.','authz.py;handlers/panel.py','test_settings_pure_sql_and_bound_panel_scope_revocation;test_factory_scope_review_panel_and_target_cache'),
+('review-claim','Immutable allowlisted approved operation, opaque nonce, TTL120, scope/digest/rights/expiry checks, compare-and-delete Lua, final fresh recheck.','reviews.py;operations.py','test_anonymous_review_invalid_attempt_concurrent_one_use_attribution;test_review_state_denial_and_failed_execution_consumed;test_known_review_owner_wrong_chat_and_binding;test_real_redis_concurrent_approval_once'),
+('action-results','Typed step/aggregate results across all current action callers; kick both steps, sanitized retry/errors, requested/acknowledged deletion IDs; confirmed count unknown.','contracts.py;actions.py;protect.py;handlers/welcome.py;operations.py','test_kick_unmute_night_unknown_retry_and_bulk_truth;test_silent_failed_ancillary_private_audit;test_automated_failure_never_announces_false_success'),
+('warning-postcondition','Sequential history retained on failed intended sanction; reset after primary completion; log failure separate. Concurrent correctness deferred.','handlers/moderation.py','test_warning_failure_retains_history_completed_failed_log_resets'),
+('restorable-defaults','No OPEN fallback; unmute uses actual defaults; snapshot required before night close, real snapshot restore. No durable ownership redesign.','actions.py;jobs.py','test_kick_unmute_night_unknown_retry_and_bulk_truth;test_night_snapshot_precedes_close_actual_restore_redis_denial;test_captcha_callback_binding_and_failed_restore'),
+]
+for suffix,sem,path,tests in new:
+ r={k:'' for k in fields};id='GG-FOUND-'+suffix
+ r.update(id=id,module='Phase 1A existing-flow foundations',source_refs='S09,T01',source_url_or_path='bots/groupguard;PHASE_01A_REQUEST.md;PHASE_01A_SOURCE_ADDENDUM.md',source_section='Phase 1A approval and local safety contract',retrieval_or_inspection_date='2026-10-12 Asia/Jakarta',provenance='local code/tests; reviewer-supplied decision',rose_source_status='no direct retrieval; local foundation evidence only',specification_status='approved local safety contract',implementation_status='tested subset',canonical_behavior_id=id,row_kind='foundation acceptance',command_event_syntax='Existing operations only',semantics_defaults=sem,caller_permissions='Explicit operation-specific current Telegram rights',bot_permissions='Fresh relevant bot capabilities; settings do not fabricate sanction rights',chat_types='Existing group operations and server-bound private callbacks',standalone='tested',factory_child='actual ChildRegistry children 710011/710012 sharing group tested',existing_path_evidence='bots/groupguard/'+path,test_evidence=tests+'; passed',gap_status='tested subset',phase='1A',dependencies='Current Telegram membership and healthy short-lived Redis state',acceptance_scenario='Phase 1A acceptance; denied actions have zero prohibited API/domain calls',deviations_open_questions='No new families; no durable exactly-once claim; remaining 1B/1C races explicitly deferred.')
+ rows.append(r)
+with p.open('w',newline='') as f:
+ w=csv.DictWriter(f,fieldnames=fields);w.writeheader();w.writerows(rows)
+old=json.loads((root/'LEDGER_COUNTS.json').read_text());old.update(total_rows=len(rows),implementation=dict(Counter(r['implementation_status'] for r in rows)),specification=dict(Counter(r['specification_status'] for r in rows)),phase=dict(Counter(r['phase'] for r in rows)),row_kind=dict(Counter(r['row_kind'] for r in rows)),canonical_behavior_ids=len({r['canonical_behavior_id'] for r in rows}))
+old['source_rows']=dict(Counter(s.strip() for r in rows for s in r['source_refs'].split(',') if s.strip()));old['current_scope']={'phase':'1A','rows':10,'implementation':dict(Counter(r['implementation_status'] for r in rows if r['phase']=='1A'))}
+(root/'LEDGER_COUNTS.json').write_text(json.dumps(old,indent=2,ensure_ascii=False)+'\n')
+def cell(s):return s.replace('|','\\|').replace('\n','<br>')
+md=['# Cumulative feature ledger after Phase 1A','',f'{len(rows)} traceability rows; all 150 prior IDs retained, all 51 planning areas mapped. Phase 1A foundation evidence does not certify later Rose behavior. Source coverage remains reviewer-supplied; direct Rose retrieval is zero. Phase 0B audit preserved in /workspace/groupguard-phase00b-original.tar.gz (SHA256 bacca5245b1b05ba13889a2c7033df98fe7f5aa40a1c8ca2ef0f01dc1d407855).','', '| ID | Source | Kind | Syntax / behavior | Spec status | Implementation | Phase | Permission | Acceptance |','| --- | --- | --- | --- | --- | --- | --- | --- | --- |']
+for r in rows:md.append('| '+' | '.join(cell(r[k]) for k in ['id','source_refs','row_kind','command_event_syntax','specification_status','implementation_status','phase','caller_permissions','acceptance_scenario'])+' |')
+(root/'FEATURE_MATRIX.md').write_text('\n'.join(md)+'\n')
+sources=root/'sources'
+for name in ['PHASE_00B_REVIEW.md','PHASE_01A_SOURCE_ADDENDUM.md','PHASE_01A_HANDOFF_README.md','PHASE_01A_PROMPT.md','REPORT_TEMPLATE.md','MANIFEST.json']:
+ dest= 'PHASE_01A_REPORT_TEMPLATE.md' if name=='REPORT_TEMPLATE.md' else 'PHASE_01A_HANDOFF_MANIFEST.json' if name=='MANIFEST.json' else name
+ shutil.copyfile(Path('/tmp/groupguard-phase01a-handoff')/name,sources/dest)
+shutil.copyfile('/workspace/attachments/5743317a-0b18-4d2a-8b92-968e412f8633/Pasted text.txt',sources/'PHASE_01A_REQUEST.md')
+for name,addition in [
+('DECISIONS.md','Phase 1A approved policies: anonymous review TTL120; sanctions60s–365d inclusive; absolute deadlines need45s remaining, inside API30s/366d thresholds. Numeric/sign/dot-leading input is time-shaped; reason-only words remain permanent. No OPEN fallback. Phase 1A source correction resolves /kickme basic invoking-user self-kick purpose (implementation2, disable8); roles/reason/notifications/logs S32 belong9, export/import/subscriptions10. Outcomes and immutable approvals are local hardening, not independently certified Rose parity.'),
+('ARCHITECTURE.md','Implemented Phase 1A contracts are contracts.py, authz.py, perms.py, operations.py, reviews.py, actions.py. Existing manual mutations use uncached Telegram rights sets; short-lived reviews use Redis compare-and-delete Lua; panels bind bot/target/human/message/thread. Read config(fresh=True) at protected execution paths. No table, migration, router precedence or subscription change. See reports/PHASE_01A.md for exact signatures and adoption map.'),
+('SOURCE_COVERAGE.md','Phase 1A sources: reviewer-supplied PHASE_00B_REVIEW and PHASE_01A_SOURCE_ADDENDUM, preserved in sources/. Controlling pasted request preserved as PHASE_01A_REQUEST.md; ZIP prompt/template are supporting references. S17 basic self-kick purpose resolved; optional syntax remains unknown. S32 sequencing corrected9/10. No direct retrieval attempted or claimed.'),
+('PLAN.md','Phase 1A existing-flow authorization/outcome implementation report is reports/PHASE_01A.md. Do not begin1B without reviewer prompt. 1B remains edited delivery/core precedence/gs shadow/subscriptions;1C remains config/warnings ownership/CAPTCHA generations/jobs/replay. Federation S32 roles/reasons/notifications/logs9; banlist/import/subscriptions10. Future /kickme implementation2, disable8; no command implemented now.')]:
+ p=root/name;p.write_text(p.read_text()+'\n\n## Phase 1A cumulative addendum\n\n'+addition+'\n')
+print(json.dumps({k:old[k] for k in ['total_rows','implementation','phase','current_scope']},indent=2))

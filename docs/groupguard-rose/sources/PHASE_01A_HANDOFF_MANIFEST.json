@@ -1,0 +1,33 @@
+{
+  "prepared_date": "2026-10-12",
+  "timezone": "Asia/Jakarta",
+  "authorized_phase": "1A",
+  "source_changes": false,
+  "members": [
+    {
+      "path": "PHASE_01A_HANDOFF_README.md",
+      "size_bytes": 705,
+      "sha256": "7996cdf685eef2b018ec85b0efd4e3b297328458d8eb1357c7ea5e3d1d3ee8c7"
+    },
+    {
+      "path": "PHASE_01A_PROMPT.md",
+      "size_bytes": 17319,
+      "sha256": "42fb3cdd5e3ea06b90ad642370a9adac6c80db46c0b08717833decb9f0cccc1c"
+    },
+    {
+      "path": "PHASE_00B_REVIEW.md",
+      "size_bytes": 6133,
+      "sha256": "0810ad18c2ae203b6af8dffad20a9a4ea45b9cfba5eab3a8d30a016d12461d73"
+    },
+    {
+      "path": "PHASE_01A_SOURCE_ADDENDUM.md",
+      "size_bytes": 2752,
+      "sha256": "8b39d8f2aaa0c7c1f5acc8379473fa6a316eb18c846b3a44e20ab66a3fc7e5d4"
+    },
+    {
+      "path": "REPORT_TEMPLATE.md",
+      "size_bytes": 3660,
+      "sha256": "d42e97c2101fd32a7439a1349396dc844c3c45fd5b3f759c4cf85dd75cc1a5ef"
+    }
+  ]
+}

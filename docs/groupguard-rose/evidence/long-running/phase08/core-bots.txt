@@ -1,0 +1,34 @@
+
+Discovered 9 bot module(s):
+  • anonymous          | Title: Anonymous Inbox      | Table prefix: anon_
+    Features: admin, broadcast, daily_stats, force_sub, lang, referral, vip
+    Factory: 'anonymous' (standalone + factory template)
+    Scheduled jobs: daily_prompt
+  • custombot          | Title: Custom Bot           | Table prefix: cb_
+    Features: admin, broadcast, lang
+    Factory: 'custom' (factory template only)
+  • cvbot              | Title: CV Analyzer          | Table prefix: cv_
+    Features: admin, broadcast, daily_stats, force_sub, lang, referral, vip
+    Scheduled jobs: cv_sessions
+  • doctools           | Title: Student Document Tools | Table prefix: dt_
+    Features: admin, broadcast, daily_stats, force_sub, lang, referral, vip
+    Processes: worker
+  • factory            | Title: Bot Factory          | Table prefix: fac_
+    Features: admin, broadcast, daily_stats, force_sub, lang, referral, vip
+  • feedback           | Title: Feedback Bot         | Table prefix: fb_
+    Features: admin, broadcast, lang
+    Factory: 'feedback' (factory template only)
+  • groupguard         | Title: Group Guard          | Table prefix: gg_
+    Features: admin, broadcast, daily_stats, lang, vip
+    Factory: 'groupguard' (standalone + factory template)
+    Scheduled jobs: captchas, night
+  • notes              | Title: Notes & Reminders    | Table prefix: notes_
+    Features: admin, broadcast, daily_stats, lang, referral, vip
+    Scheduled jobs: reminders
+  • socialdownload     | Title: Social Download Bot  | Table prefix: sd_
+    Features: admin, broadcast, daily_stats, force_sub, groups, lang, referral, vip
+    Processes: worker
+    Scheduled jobs: cleanup, ytdlp_update_check
+
+All bot module contracts validated successfully.
+

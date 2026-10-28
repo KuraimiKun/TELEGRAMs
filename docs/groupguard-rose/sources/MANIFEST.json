@@ -1,0 +1,13 @@
+{
+  "reference_date": "2026-10-12",
+  "baseline_reference": "d55fc44fe1a63ba5788125c1325d2a855944d5e0",
+  "prerequisite_commit": "44ff18f39d2fbbc8583eb5e0ddbd013ffd20f83f",
+  "files": {
+    "CLOUD_BASELINE.bundle": "61869c1cae2bc35ae3aa1cc8080fdbe8656ddaf22c6c69a8b7ae3503f74768cb",
+    "OFFLINE_SOURCE_DIGEST.md": "b5e7ce14c162449ecbda05e6a3393ff035bdec745dbbcbe42fe21f5841c2e8c0",
+    "PHASE_00_REVIEW.md": "796f0110ca20ab1b27a70f4bf8c6a06c7a2eb89f2203e5f55d790da2c9f949dd",
+    "PHASE_00B_PROMPT.md": "e2c946b1a500e277ec79c54cd5d32f8febcf70855141a52903d80db63633ff2d",
+    "PLAN.md": "d55813f79dd994d44308d48c52185e0e9f9bf7036b1f73688201d356728f5da3",
+    "REPORT_TEMPLATE.md": "d42e97c2101fd32a7439a1349396dc844c3c45fd5b3f759c4cf85dd75cc1a5ef"
+  }
+}

@@ -1,0 +1,105 @@
+Phase 1A is implemented and ready for report review. The [self-contained report](/workspace/TELEGRAMBOTS/docs/groupguard-rose/reports/PHASE_01A.md) is saved with the ledger, test evidence and artifact hashes. No later-phase implementation began.
+HEAD remains 96357ef45c6492e03c626581ce2ee156d2da3816 on work; changes are uncommitted. The starting tree was 7895f72031fd4fac13b4ff280ba04b16c8d5842c. The pre-existing audit was preserved in /workspace/groupguard-phase00b-original.tar.gz, SHA256 bacca5245b1b05ba13889a2c7033df98fe7f5aa40a1c8ca2ef0f01dc1d407855. Historical reports and evidence remain unchanged. The pasted request controlled scope; the ZIP supplied supporting review and source documents.
+Delivered behavior
+Existing manual mutations now require an attributable human with fresh Telegram permissions, or a sufficiently privileged human’s approval of an immutable anonymous request. Cached administrators, factory ownership, platform administration, pseudo-users and channel senders confer no mutation authority.
+Anonymous reviews expire within 120 seconds. They bind the bot, group, original/review messages, thread, target, arguments, reason, duration and required rights. Invalid attempts retain the request; valid approvals atomically claim it once and recheck authority before execution. Execution failure consumes the request. Public output omits reviewer identity; private audit records the actual approving human and distinguishes anonymous from known-human initiation.
+Targets must be positive human IDs resolved through replies, entities, observed usernames or numeric IDs. Unknown, stale or ambiguous usernames, pseudo-users, bots and freshly protected administrators/creators are denied. Reasons retain their first token and internal spacing; reasons over 256 characters are rejected.
+Temporary sanctions accept 60 seconds–365 days inclusive. Missing or malformed /tban and /tmute timers cause no sanction, deletion or domain write. Numeric/sign/dot-leading malformed input cannot silently become a permanent action. Reason-only /ban 20 spam remains supported. General timers still accept 10s.
+Typed results distinguish primary completion from ancillary failure. A kick requires both ban and unban; failed restoration cannot announce success. Unmute uses actual chat defaults, and night closure requires a stored restorable snapshot. Bulk deletion reports requested and acknowledged IDs while keeping the confirmed deleted count unknown.
+Actual contracts
+Symbols	Contract
+contracts.Actor, Right	Frozen actor identity; source chat and operation target remain distinct. Rights include change-info, deletion, restriction, pinning, invitation, promotion, topics and attributable creator.
+authz.authorize(...) → Authorization	Uncached bot and human GetChatMember; explicit required-right sets and denial codes.
+internal_authorize(...)	Current bot capabilities only; no fictional human authority.
+perms.resolve_target(...)	Safe target or TargetError; fresh protected-target checks before mutation.
+parse_action_duration, split_action_args	Explicit absent/valid/invalid result with separate sanction bounds.
+operations.Operation, submit, execute	Frozen allowlisted operation shared by direct and reviewed execution.
+StepResult, ActionResult	Explicit completion/status/error fields; Boolean conversion raises.
+actions.punish/unmute/unban/delete/delete_many	Typed primary and ancillary outcomes; sanitized API errors and RetryAfter information.
+GuardService.config(..., fresh=True)	Uncached configuration read for protected execution paths; general transaction redesign remains deferred.
+
+
+The new command deadline uses an integer timestamp calculated immediately before API dispatch. Existing absolute deadlines require at least 45 seconds remaining inside the API’s permanent-conversion boundaries. Arbitrary network delay and permission changes between independent Telegram RPCs remain practical limits.
+Mutation-to-rights mapping
+Every manual row requires current human authorization and an actual bot-administrator lookup.
+Existing mutations	Human rights	Additional bot capabilities
+ban/tban/mute/tmute/kick, unban/unmute	restrict-members	restrict-members
+sban	restrict-members + delete-messages before any effect	Both
+warn, unwarn/rmwarn/resetwarns, unwarn button	restrict-members	restrict-members before warning write
+purge/del	delete-messages	delete-messages
+pin/unpin	pin-messages	pin-messages
+setlog	change-info in source and destination	Destination channel also needs post-messages
+unsetlog	change-info	None fabricated
+rules/welcome, note/filter, lock/blocklist writes	change-info	None fabricated
+settings and all panel configuration branches	change-info on each write	None fabricated; server-bound owner/target/message/thread
+night configuration	change-info	None fabricated for SQL settings
+Internal flood, blocklist+warn, AI	No human authority	Complete deletion/restriction union before compound effects
+CAS, CAPTCHA and night jobs	No human authority	Relevant restriction/deletion capabilities and current policy
+Existing join-request acceptance	Bound applicant verification	invite-users
+
+
+Panel close accepts only an appropriate bound bot-created panel. Existing aliases, VIP/credit checks, branding and standalone/factory behavior remain. The gs_ routing shadow was preserved for Phase 1B.
+Changed files
+Production/test/locale diff: 22 files, 2,272 insertions and 663 deletions, including new files.
+Files	Purpose
+contracts.py, authz.py	Actor/right/result contracts and fresh authorization/bindings
+perms.py, operations.py, reviews.py	Safe parsing, immutable execution and one-use approvals
+actions.py	Truthful API outcomes, deadlines, restoration and deletion evidence
+handlers/moderation.py	Existing sanctions, warnings, undo, deletion, pins and logs
+handlers/content.py	Authorized rules/welcome/note/filter/lock/blocklist writes
+handlers/panel.py	Bound settings panels, current rights and ancillary edit failures
+handlers/welcome.py, protect.py, jobs.py	Automated capability checks and truthful outcomes
+service.py, module.py	Fresh configuration option and review callback router
+locales/en/messages.ftl, locales/ar/messages.ftl	Matching errors, reviews and outcome messages
+tests/conftest.py	Explicit bot-authored message identities and edit responses
+tests/bots/groupguard/conftest.py	Test-only conversation throttling fixture
+tests/bots/groupguard/test_groupguard.py	Current memberships/defaults and bound callbacks
+tests/bots/groupguard/test_phase01a.py	Adversarial acceptance cases and actual child runtimes
+tests/integration/test_groupguard_review.py	Real Redis concurrent approval check
+tests/e2e/test_platform_flow.py	Current capability fields and actual CAPTCHA prompt identity
+
+
+Production paths above are under bots/groupguard/. Audit changes cover FEATURE_MATRIX.csv/.md, LEDGER_COUNTS.json, architecture/decisions/source coverage/plan addenda, the report, source copies, evidence and the refreshed manifest. No dependency, configuration-default, SQL schema or migration changes were made.
+Acceptance evidence
+All parameterized cases run in standalone and actual ChildRegistry children 710011 and 710012, sharing the same group.
+Group	Concrete tests and observed result
+Actor escalation	test_actor_escalation_creator_and_cached_aliases: pseudo/channel/bot/factory-owner/platform-admin escalation denied; ordinary admin denied creator authority; real creator accepted.
+Fresh rights and unions	test_fresh_union_zero_mutations: unrelated rights, missing bot rights, demotion, lookup failure and incomplete sban union produce zero prohibited calls or warning writes.
+Callback bindings	test_settings_pure_sql_and_bound_panel_scope_revocation: wrong human/chat/bot/thread/message/target and unbound close deny; legitimate PM and lock-panel writes work; revocation blocks subsequent writes.
+Anonymous approvals	test_anonymous_review_invalid_attempt_concurrent_one_use_attribution, test_review_state_denial_and_failed_execution_consumed: invalid attempts retain state; eight concurrent approvals cause one ban; failed execution cannot replay. Real Redis: 40 concurrent approvals cause one sanction.
+Targets and reasons	test_target_forms_reason_preservation_username_staleness: reply/entity/username/ID forms preserve reasons; stale/unknown/negative/pseudo/overflow/protected targets deny.
+Durations	test_invalid_duration_zero_mutations, test_valid_duration_units_deadline_and_general_timer: invalid timers cause zero mutations; 1m reaches the API with a safe deadline; 10s general timer remains valid.
+Postconditions	Warning failure retains history; completed sanction plus failed log resets with separate failure evidence. Partial kick, failed defaults, missing snapshot and RetryAfter are explicit.
+Notices, silence and bulk	CAS/AI failed bans never announce success; silent ancillary failures retain private target evidence; 205 requested IDs with one failed batch acknowledge 105, confirmed count unknown. Failed panel/review edits report ancillary failure.
+Namespace isolation	test_factory_scope_review_panel_and_target_cache: foreign review, panel and target-cache state cannot authorize another bot; only the owning namespace reaches the sanction.
+
+
+Final checks
+Commands ran from /workspace/TELEGRAMBOTS using the established .venv.
+Command	Exit	Result
+.venv/bin/python -m pip check	0	No broken requirements
+.venv/bin/python -m core bots	0	9 bot contracts discovered
+.venv/bin/ruff check .	0	Passed
+.venv/bin/mypy	0	246 source files; no issues
+.venv/bin/pytest tests/bots/groupguard tests/bots/factory tests/test_locales.py -q --tb=short	0	150 passed
+.venv/bin/pytest -q --tb=short	1	371 passed, 1 baseline failure, 4 skipped
+Disposable PostgreSQL + real Redis integration suite	0	3 passed
+Disposable PostgreSQL/Redis runtime e2e	0	1 passed
+git diff --check; artifact SHA256 verification	0	Passed
+
+
+The integration command used TEST_DATABASE_URL=postgresql+asyncpg://bot@127.0.0.1:55432/gg_phase01a_integration and TEST_REDIS_CLAIM_URL=redis://127.0.0.1:56379/1. Runtime e2e used the disposable bot database and Redis DB0. The four default skips were these service-dependent tests; all were separately executed successfully.
+Versions: Python 3.12.14; aiogram 3.31.0; SQLAlchemy 2.1.4; asyncpg 0.32.0; Alembic 1.20.0; redis-py 7.4.1; fakeredis 2.39.0; pytest 9.1.1; pytest-asyncio 1.4.0; Ruff 0.17.0; mypy 2.4.0. Disposable servers were PostgreSQL 16.15 and Redis 7.4.11. Telegram was mocked; runtime e2e used a local HTTP Bot API double.
+The only remaining failure is unchanged:
+tests/bots/doctools/test_review.py::test_malformed_html_and_invalid_encoding_are_controlled
+test_review.py:77
+Failed: DID NOT RAISE CitationError
+DocTools, its test and dependencies were not altered to hide it.
+Ledger and handoff
+The ledger now contains 818 rows, retaining all 812 starting IDs and all 150 historical IDs. Four existing foundation rows were repaired and six foundation rows added. All ten Phase 1A rows are marked tested subset; later parent features remain partial.
+Whole-ledger implementation counts: 517 not implemented, 194 partial, 62 existing-unverified, 13 tested subset, 10 open questions, three open meanings, ten SDK-inspected/deployment-unverified, five not applicable, two external-service-unverified, and one each digest-inventoried and baseline-verified.
+/kickme now has its sourced invoking-user-only self-kick purpose recorded; implementation remains Phase 2 and disablement Phase 8. Optional syntax remains unresolved. S32 roles/reasons/notifications/log configuration moved to Phase 9; export/import/subscriptions remain Phase 10.
+English/Arabic placeholder parity passes. New outcome examples include “The primary action completed, but a related step failed.” / “اكتمل الإجراء الأساسي، لكن فشلت خطوة مرتبطة به.”
+Phase 1B routing/delivery/subscription defects and Phase 1C configuration/warning concurrency, CAPTCHA generations, replay and job ownership remain open. One-use Redis approval is not durable exactly-once Telegram delivery. Night ownership/recovery and child night-off recovery also remain deferred; live Rose/deployed API parity is unverified.
+The new disposable database was dropped, runtime-created resources cleaned, Redis DB0/DB1 were empty, and dedicated test containers stopped. Existing onboarding services and prior databases were preserved.
+Stopped after Phase 1A. Awaiting the reviewer's next prompt.

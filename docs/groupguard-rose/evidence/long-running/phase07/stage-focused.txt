@@ -1,0 +1,39 @@
+
+==================================== ERRORS ====================================
+____________ ERROR collecting tests/bots/groupguard/test_phase07.py ____________
+ImportError while importing test module '/workspace/TELEGRAMBOTS/tests/bots/groupguard/test_phase07.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/bots/groupguard/test_phase07.py:11: in <module>
+    from bots.groupguard import actions, durable, flood, jobs, raids, verification
+bots/groupguard/__init__.py:3: in <module>
+    from bots.groupguard.module import GroupGuardBot
+bots/groupguard/module.py:14: in <module>
+    from bots.groupguard import admin, content_access, jobs, operations, raids, reactions, repeats, verification
+bots/groupguard/raids.py:9: in <module>
+    from datetime import hashlib
+E   ImportError: cannot import name 'hashlib' from 'datetime' (/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/datetime.py)
+___________ ERROR collecting tests/bots/groupguard/test_phase01a.py ____________
+ImportError while importing test module '/workspace/TELEGRAMBOTS/tests/bots/groupguard/test_phase01a.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/bots/groupguard/test_phase01a.py:23: in <module>
+    from bots.groupguard import actions, authz, perms, reviews
+bots/groupguard/__init__.py:3: in <module>
+    from bots.groupguard.module import GroupGuardBot
+bots/groupguard/module.py:14: in <module>
+    from bots.groupguard import admin, content_access, jobs, operations, raids, reactions, repeats, verification
+bots/groupguard/raids.py:9: in <module>
+    from datetime import hashlib
+E   ImportError: cannot import name 'hashlib' from 'datetime' (/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/datetime.py)
+=========================== short test summary info ============================
+ERROR tests/bots/groupguard/test_phase07.py
+ERROR tests/bots/groupguard/test_phase01a.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+2 errors in 0.33s

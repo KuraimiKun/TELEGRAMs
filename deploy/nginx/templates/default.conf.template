@@ -1,0 +1,106 @@
+# Rendered by the nginx image at start-up (envsubst): ${DOMAIN}, ${DIRECT_LINK_SECRET}.
+
+server_tokens off;
+
+# Webhook POSTs are tiny; cap them and rate-limit per source IP.
+limit_req_zone $binary_remote_addr zone=webhook:10m rate=50r/s;
+limit_req_zone $binary_remote_addr zone=dl:10m rate=5r/s;
+limit_conn_zone $binary_remote_addr zone=dlconn:10m;
+
+# Docker's embedded DNS: resolve the gateway lazily so nginx starts even if it is restarting.
+resolver 127.0.0.11 valid=10s ipv6=off;
+
+# Telegram delivers webhooks only from these ranges (https://core.telegram.org/bots/webhooks).
+geo $telegram_source {
+    default         0;
+    149.154.160.0/20 1;
+    91.108.4.0/22    1;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name ${DOMAIN};
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    # Container healthcheck (local only).
+    location = /health/live {
+        allow 127.0.0.1;
+        deny all;
+        set $gw http://gateway:8080;
+        proxy_pass $gw;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name ${DOMAIN};
+
+    ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 1d;
+
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    add_header X-Content-Type-Options nosniff always;
+
+    set $gw http://gateway:8080;
+
+    # Telegram webhook forwarder for all bots (/webhook/<slug>). The per-bot secret token header is
+    # validated by the gateway.
+    location /webhook/ {
+        # Secret token is validated by the gateway; IP filter disabled to support local Bot API and dynamic Telegram IPs.
+        # if ($telegram_source = 0) { return 403; }
+        limit_req zone=webhook burst=200 nodelay;
+        client_max_body_size 1m;
+        proxy_pass $gw;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 60s;
+    }
+
+    # Liveness is public (no details). Readiness exposes dependency status, so keep it internal.
+    location = /health/live {
+        proxy_pass $gw;
+    }
+
+    location /health {
+        return 404;
+    }
+
+    # Expiring, HMAC-signed direct download links: /dl/<bot>/<file>?md5=<sig>&expires=<unix>
+    # Signature = base64url(md5("<expires><uri> <secret>")), produced by core/ui/links.py.
+    location /dl/ {
+        limit_req zone=dl burst=10 nodelay;
+        limit_conn dlconn 4;
+
+        secure_link $arg_md5,$arg_expires;
+        secure_link_md5 "$secure_link_expires$uri ${DIRECT_LINK_SECRET}";
+        if ($secure_link = "")  { return 403; }
+        if ($secure_link = "0") { return 410; }
+
+        alias /var/www/dl/;
+        autoindex off;
+        add_header Content-Disposition "attachment" always;
+        add_header Cache-Control "private, no-store" always;
+    }
+
+    location / {
+        return 404;
+    }
+}

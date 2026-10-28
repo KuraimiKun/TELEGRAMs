@@ -1,0 +1,48 @@
+{
+  "prepared_date": "2026-10-12",
+  "timezone": "Asia/Jakarta",
+  "execution_mode": "all_remaining_stages_autonomous",
+  "source_changes": false,
+  "members": [
+    {
+      "path": "LONG_RUNNING_HANDOFF_README.md",
+      "size_bytes": 1226,
+      "sha256": "5bf292cfcf0e80945ed8540ad0f705d43a538337cdf18b056ae8f2226f3a5411"
+    },
+    {
+      "path": "LONG_RUNNING_START_PROMPT.txt",
+      "size_bytes": 645,
+      "sha256": "db73e7fd2b1b407e28ddcb991f79d3030bcea3f991b0680685b188eaa6d8b297"
+    },
+    {
+      "path": "LONG_RUNNING_MASTER_PLAN.md",
+      "size_bytes": 41269,
+      "sha256": "d50ea0d5ff347086a532cc465f91bd6360f5f319f3a433619cca86f11ea90359"
+    },
+    {
+      "path": "LONG_RUNNING_REPORT_TEMPLATE.md",
+      "size_bytes": 2628,
+      "sha256": "1695c3cddef56e264d4fbfce08041ab4e462574d11d4af54e05978dcd6afa1bf"
+    },
+    {
+      "path": "OFFLINE_SOURCE_DIGEST.md",
+      "size_bytes": 29437,
+      "sha256": "b5e7ce14c162449ecbda05e6a3393ff035bdec745dbbcbe42fe21f5841c2e8c0"
+    },
+    {
+      "path": "PHASE_01A_SOURCE_ADDENDUM.md",
+      "size_bytes": 2752,
+      "sha256": "8b39d8f2aaa0c7c1f5acc8379473fa6a316eb18c846b3a44e20ab66a3fc7e5d4"
+    },
+    {
+      "path": "LONG_RUNNING_SOURCE_ADDENDUM.md",
+      "size_bytes": 1684,
+      "sha256": "252a8741e9d53ff936372eafb64887c7c1b0a849573c0359f00c2e26cd7c3cf6"
+    },
+    {
+      "path": "reports/PHASE_01A_CLOUD_REPORT.txt",
+      "size_bytes": 12439,
+      "sha256": "d76daf8bc92c756c1572fa8797129b0b1c7a38f340e5ddf9333208165e41f55d"
+    }
+  ]
+}

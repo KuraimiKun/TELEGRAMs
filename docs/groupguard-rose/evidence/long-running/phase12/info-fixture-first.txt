@@ -1,0 +1,40 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+_ test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat[standalone] _
+tests/bots/groupguard/test_phase11.py:711: in test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat
+    'forward_origin':MessageOriginUser(date=pm('date',MEMBER).date,sender_user=tg_user(30))})
+                                            ^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'Update' object has no attribute 'date'
+----------------------------- Captured stdout call -----------------------------
+2026-10-13 17:02:14 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=123456 target=e0bc3763-bba3-4cf8-bc6d-974d4f1b35d5
+_ test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat[child-A] _
+tests/bots/groupguard/test_phase11.py:711: in test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat
+    'forward_origin':MessageOriginUser(date=pm('date',MEMBER).date,sender_user=tg_user(30))})
+                                            ^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'Update' object has no attribute 'date'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 17:02:15 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 17:02:15 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-13 17:02:15 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=710011 target=b2ccccc4-db86-48a2-9b2e-bc139af5568f
+_ test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat[child-B] _
+tests/bots/groupguard/test_phase11.py:711: in test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat
+    'forward_origin':MessageOriginUser(date=pm('date',MEMBER).date,sender_user=tg_user(30))})
+                                            ^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'Update' object has no attribute 'date'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 17:02:15 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 17:02:15 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-13 17:02:15 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=710012 target=6ae37e5a-1f40-4ea3-ad1c-25285a974ea7
+=========================== short test summary info ============================
+FAILED tests/bots/groupguard/test_phase11.py::test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat[standalone]
+FAILED tests/bots/groupguard/test_phase11.py::test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat[child-A]
+FAILED tests/bots/groupguard/test_phase11.py::test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat[child-B]
+3 failed, 105 deselected in 7.07s

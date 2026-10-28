@@ -1,0 +1,88 @@
+BENCHMARK {"workload": "80 parallel delivered messages", "context": "standalone", "bot_id": 123456, "seconds": 3.865156, "updates": 80, "actual_restrictions": 16, "actual_deletes": 16, "services": "PostgreSQL16 / Redis7 disposable", "telegram": "stateful recording SDK", "throttling": "conversation fixture bypass; actual runtime guard separately tested"}
+.2026-10-13 16:50:52 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 16:50:52 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+BENCHMARK {"workload": "80 parallel delivered messages", "context": "child", "bot_id": 710011, "seconds": 4.728206, "updates": 80, "actual_restrictions": 16, "actual_deletes": 16, "services": "PostgreSQL16 / Redis7 disposable", "telegram": "stateful recording SDK", "throttling": "conversation fixture bypass; actual runtime guard separately tested"}
+.2026-10-13 16:50:58 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 16:50:59 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+BENCHMARK {"workload": "80 parallel delivered messages", "context": "child", "bot_id": 710012, "seconds": 2.771428, "updates": 80, "actual_restrictions": 16, "actual_deletes": 16, "services": "PostgreSQL16 / Redis7 disposable", "telegram": "stateful recording SDK", "throttling": "conversation fixture bypass; actual runtime guard separately tested"}
+.2026-10-13 16:51:03 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=123456 target=4b529ef4-410e-4353-8e0f-fc5f396ed58b
+2026-10-13 16:51:04 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:04 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:04 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:04 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:04 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:04 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:04 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:05 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:05 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:05 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:05 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:05 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:05 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:05 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:05 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:06 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:06 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:06 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:06 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:06 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:11 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:13 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:13 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:13 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:13 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:13 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:15 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:15 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:15 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:15 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+BENCHMARK {"workload": "one ban /250 observed attached fixture groups", "context": "standalone", "bot_id": 123456, "seconds": 13.979778, "groups": 250, "actual_bans": 250, "peak_pending": 106, "sweeps": 13, "producer_batch": 100, "sweep_limit": 100, "configured_outbound_quota": 20, "services": "PostgreSQL16 / Redis7 disposable", "telegram": "stateful recording SDK", "fixture": "synthetic attachments; actual service/worker/SDK effects"}
+.2026-10-13 16:51:17 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 16:51:18 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+2026-10-13 16:51:18 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=710011 target=037ff3fa-dd31-4817-ba18-3a9fbbed73ee
+2026-10-13 16:51:27 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:27 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:27 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:27 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:27 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:27 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:27 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:27 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:28 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:29 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:29 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:29 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:29 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:29 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:30 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+BENCHMARK {"workload": "one ban /250 observed attached fixture groups", "context": "child", "bot_id": 710011, "seconds": 16.150607, "groups": 250, "actual_bans": 250, "peak_pending": 103, "sweeps": 7, "producer_batch": 100, "sweep_limit": 100, "configured_outbound_quota": 20, "services": "PostgreSQL16 / Redis7 disposable", "telegram": "stateful recording SDK", "fixture": "synthetic attachments; actual service/worker/SDK effects"}
+.2026-10-13 16:51:36 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 16:51:36 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+2026-10-13 16:51:36 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=710012 target=c979986d-1761-499f-b983-ecb797c71a61
+2026-10-13 16:51:40 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:40 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:40 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:40 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:40 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:40 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:41 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:41 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+2026-10-13 16:51:41 [info     ] gg_action_denied               code=local_rate operation=fed_enforce
+BENCHMARK {"workload": "one ban /250 observed attached fixture groups", "context": "child", "bot_id": 710012, "seconds": 15.344971, "groups": 250, "actual_bans": 250, "peak_pending": 108, "sweeps": 7, "producer_batch": 100, "sweep_limit": 100, "configured_outbound_quota": 20, "services": "PostgreSQL16 / Redis7 disposable", "telegram": "stateful recording SDK", "fixture": "synthetic attachments; actual service/worker/SDK effects"}
+.
+6 passed in 70.31s (0:01:10)

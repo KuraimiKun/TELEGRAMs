@@ -1,0 +1,295 @@
+...FFF...FFFFFFFFF...FFF....................                             [100%]
+=================================== FAILURES ===================================
+_ test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[standalone] _
+tests/bots/groupguard/test_phase09.py:63: in test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct
+    assert await federations.admins(env, fed.id) == [MEMBER, 20]
+E   assert [20] == [20, 20]
+E
+E     Right contains one more item: 20
+E     Use -v to get more diff
+_ test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[child-A] _
+tests/bots/groupguard/test_phase09.py:63: in test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct
+    assert await federations.admins(env, fed.id) == [MEMBER, 20]
+E   assert [20] == [20, 20]
+E
+E     Right contains one more item: 20
+E     Use -v to get more diff
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:42 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:42 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[child-B] _
+tests/bots/groupguard/test_phase09.py:63: in test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct
+    assert await federations.admins(env, fed.id) == [MEMBER, 20]
+E   assert [20] == [20, 20]
+E
+E     Right contains one more item: 20
+E     Use -v to get more diff
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:43 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:43 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[standalone] _
+tests/bots/groupguard/test_phase09.py:95: in test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:46:45 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot=groupguard bot_id=123456 target=0037ea3f-8854-4cb6-8b1a-3c058e7cf3a9 update_id=5133 user_id=10
+2026-10-12 23:46:45 [info     ] admin_action                   action=gg_ban admin_id=10 bot=groupguard bot_id=123456 target=-1001234567890 update_id=5135 user_id=10
+_ test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[child-A] _
+tests/bots/groupguard/test_phase09.py:95: in test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:45 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:46 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:46:46 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot=c710011 bot_id=710011 target=fe90fe41-5db5-488c-a4ce-1b344e17865c update_id=5143 user_id=10
+2026-10-12 23:46:46 [info     ] admin_action                   action=gg_ban admin_id=10 bot=c710011 bot_id=710011 target=-1001234567890 update_id=5145 user_id=10
+_ test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[child-B] _
+tests/bots/groupguard/test_phase09.py:95: in test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:46 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:46 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 23:46:46 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot=c710012 bot_id=710012 target=a51c7f6e-56a4-4f01-a52c-61b196d9c7cc update_id=5153 user_id=10
+2026-10-12 23:46:46 [info     ] admin_action                   action=gg_ban admin_id=10 bot=c710012 bot_id=710012 target=-1001234567890 update_id=5155 user_id=10
+_ test_fed_stale_confirmation_after_rename_and_revoked_log_destination[standalone] _
+tests/bots/groupguard/test_phase09.py:117: in test_fed_stale_confirmation_after_rename_and_revoked_log_destination
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+_ test_fed_stale_confirmation_after_rename_and_revoked_log_destination[child-A] _
+tests/bots/groupguard/test_phase09.py:117: in test_fed_stale_confirmation_after_rename_and_revoked_log_destination
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:47 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:47 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_fed_stale_confirmation_after_rename_and_revoked_log_destination[child-B] _
+tests/bots/groupguard/test_phase09.py:117: in test_fed_stale_confirmation_after_rename_and_revoked_log_destination
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:48 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:48 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_fed_notifications_off_preserves_log_and_failure_is_visible[standalone] __
+tests/bots/groupguard/test_phase09.py:136: in test_fed_notifications_off_preserves_log_and_failure_is_visible
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+___ test_fed_notifications_off_preserves_log_and_failure_is_visible[child-A] ___
+tests/bots/groupguard/test_phase09.py:136: in test_fed_notifications_off_preserves_log_and_failure_is_visible
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:49 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:49 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+___ test_fed_notifications_off_preserves_log_and_failure_is_visible[child-B] ___
+tests/bots/groupguard/test_phase09.py:136: in test_fed_notifications_off_preserves_log_and_failure_is_visible
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:50 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:51 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right[standalone] _
+tests/bots/groupguard/test_phase09.py:186: in test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+_ test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right[child-A] _
+tests/bots/groupguard/test_phase09.py:186: in test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:53 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:53 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+_ test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right[child-B] _
+tests/bots/groupguard/test_phase09.py:186: in test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right
+    card = next(m for m in reversed(api.messages) if m.reply_markup)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   StopIteration
+
+The above exception was the direct cause of the following exception:
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:569: in runtest
+    super().runtest()
+.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:905: in inner
+    runner.run(coro, context=context)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:118: in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/base_events.py:691: in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+E   RuntimeError: coroutine raised StopIteration
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 23:46:54 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 23:46:54 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+=========================== short test summary info ============================
+FAILED tests/bots/groupguard/test_phase09.py::test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[standalone]
+FAILED tests/bots/groupguard/test_phase09.py::test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[child-A]
+FAILED tests/bots/groupguard/test_phase09.py::test_local_admin_fed_owner_group_creator_and_fed_admin_are_distinct[child-B]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[standalone]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[child-A]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_deletion_personal_confirmation_wrong_actor_replay_retains_telegram_bans[child-B]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_stale_confirmation_after_rename_and_revoked_log_destination[standalone]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_stale_confirmation_after_rename_and_revoked_log_destination[child-A]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_stale_confirmation_after_rename_and_revoked_log_destination[child-B]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_notifications_off_preserves_log_and_failure_is_visible[standalone]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_notifications_off_preserves_log_and_failure_is_visible[child-A]
+FAILED tests/bots/groupguard/test_phase09.py::test_fed_notifications_off_preserves_log_and_failure_is_visible[child-B]
+FAILED tests/bots/groupguard/test_phase09.py::test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right[standalone]
+FAILED tests/bots/groupguard/test_phase09.py::test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right[child-A]
+FAILED tests/bots/groupguard/test_phase09.py::test_channel_log_owner_confirmation_uses_actual_source_and_current_post_right[child-B]
+15 failed, 29 passed in 17.99s

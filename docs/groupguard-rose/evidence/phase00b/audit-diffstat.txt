@@ -1,0 +1,12 @@
+| Revised historical artifact | Added lines | Removed lines |
+| --- | --- | --- |
+| BASELINE.md | 23 | 57 |
+| ARCHITECTURE.md | 109 | 83 |
+| DECISIONS.md | 17 | 55 |
+| FEATURE_MATRIX.csv | 889 | 202 |
+| FEATURE_MATRIX.md | 816 | 211 |
+| SOURCE_COVERAGE.md | 56 | 21 |
+| PLAN.md | 237 | 7 |
+| REPORT_TEMPLATE.md | 57 | 11 |
+
+New evidence/source/mapping/count/report files and untouched historical copies are additional untracked documentation. Report/manifest sizes excluded to avoid self-reference.

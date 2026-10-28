@@ -1,0 +1,28 @@
+...FFF......                                                             [100%]
+=================================== FAILURES ===================================
+______ test_fban_after_issued_request_captcha_cannot_approve[standalone] _______
+tests/bots/groupguard/test_phase10.py:372: in test_fban_after_issued_request_captcha_cannot_approve
+    state = await issue(env, cfg=cfg, request=True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: issue() got an unexpected keyword argument 'cfg'
+________ test_fban_after_issued_request_captcha_cannot_approve[child-A] ________
+tests/bots/groupguard/test_phase10.py:372: in test_fban_after_issued_request_captcha_cannot_approve
+    state = await issue(env, cfg=cfg, request=True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: issue() got an unexpected keyword argument 'cfg'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 02:30:46 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 02:30:46 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+________ test_fban_after_issued_request_captcha_cannot_approve[child-B] ________
+tests/bots/groupguard/test_phase10.py:372: in test_fban_after_issued_request_captcha_cannot_approve
+    state = await issue(env, cfg=cfg, request=True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: issue() got an unexpected keyword argument 'cfg'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 02:30:47 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 02:30:47 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+=========================== short test summary info ============================
+FAILED tests/bots/groupguard/test_phase10.py::test_fban_after_issued_request_captcha_cannot_approve[standalone]
+FAILED tests/bots/groupguard/test_phase10.py::test_fban_after_issued_request_captcha_cannot_approve[child-A]
+FAILED tests/bots/groupguard/test_phase10.py::test_fban_after_issued_request_captcha_cannot_approve[child-B]
+3 failed, 9 passed, 36 deselected in 6.82s

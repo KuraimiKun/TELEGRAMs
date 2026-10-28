@@ -1,0 +1,26 @@
+# Local quality gate: `pre-commit install` once, then checks run on every commit.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff (lint)
+        entry: ruff check --fix
+        language: system
+        types: [python]
+      - id: ruff-format-check
+        name: ruff (imports/format sanity)
+        entry: ruff check --select I
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        pass_filenames: false
+        types: [python]
+      - id: pytest
+        name: pytest (fast suite)
+        entry: pytest -q -x
+        language: system
+        pass_filenames: false
+        stages: [pre-push]

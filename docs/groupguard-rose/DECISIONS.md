@@ -1,0 +1,118 @@
+# Phase 0B decisions
+
+The original decisions remain in history/PHASE_00. This file supersedes broad proposed scope, not historical evidence.
+
+| ID | Category | Decision / evidence |
+| --- | --- | --- |
+| D01 | Authorization | Phase0B only. Import exactly the two supplied source commits; no implementation fixes, live Telegram actions, deployment or merge. |
+| D02 | Baseline fact | Bundle and all member hashes verified. Cherry-picks preserve source author and -x provenance; resulting tracked tree equals reference. |
+| D03 | Source fact | S01–S50/T01 are dated reviewer-supplied condensed material. Cloud direct retrieval and full archive/live parity remain unobserved. No blanket source-blocked feature status. |
+| D04 | Source contract | S06/S40 one connection implementation. Spellings/aliases/rosters are traceability rows, not independent completion counts.31 published locales each require translation evidence. |
+| D05 | Existing compatibility | Preserve existing HTML, JSON/defaults, local aliases, inherited functions, night/CAS/AI/credit and child branding. Source defaults do not overwrite live-group defaults. |
+| D06 | Proposed hardening | 1A attributable actors/exact fresh rights/strict temporary intent/typed truthful results; 1B routing/edit/events/child parity; 1C atomic transitions/deadlines/retries. No generic rewrite. |
+| D07 | Source distinction | Automated silence needs creator enablement plus logs; manual silent command semantics are separate. Bot-owner broadcast scope is distinct from local group administration. |
+| D08 | Scope correction | Titles, federation transfer, global bans and mandatory cross-bot sharing have no supplied source contract; retire those broad planning assumptions to Q09. |
+| D09 | Open product policy | No approved7/30/90-day retention, deletion field policy, universal approval exemption or unified threshold boundary. Q02/Q03/Q06 own decisions. |
+| D10 | Proposed safety deviation | 1A minimum60s/maximum365d temporary-action bounds and120s review TTL are review proposals, unimplemented. TTL is interaction expiry, not personal-data retention. |
+| D11 | Verification fact | Full refreshed suite has baseline doctools malformed-HTML failure; isolated rerun reproduces. No source fix authorized. Real disposable PG integration and local mocked-API e2e pass separately. |
+| D12 | Minimal schema | 1A no SQL migration/backfill. Add tenant-scoped short review state only when authorized. Atomic/challenge/job schema designed in owning1C phases. |
+
+Concrete unresolved meanings/typos/boundaries/policies are Q01–Q10 in the ledger and report. No undefined command semantics are manufactured. Original supplied PLAN/REPORT_TEMPLATE are restored with reconciliation appendices; exact handoff copies and reconstructed historical versions are preserved.
+
+
+## Phase 1A cumulative addendum
+
+Phase 1A approved policies: anonymous review TTL120; sanctions60s–365d inclusive; absolute deadlines need45s remaining, inside API30s/366d thresholds. Numeric/sign/dot-leading input is time-shaped; reason-only words remain permanent. No OPEN fallback. Phase 1A source correction resolves /kickme basic invoking-user self-kick purpose (implementation2, disable8); roles/reason/notifications/logs S32 belong9, export/import/subscriptions10. Outcomes and immutable approvals are local hardening, not independently certified Rose parity.
+
+
+## Autonomous authority and Phase2 decisions
+
+The user’s 12 October2026 Asia/Jakarta controlling master request supersedes D01/D11’s historical phase-only authority: all1A–12 work and the separate production DocTools repair are authorized. No intermediate approval stop. Prior entries remain historical evidence.
+
+Warning threshold is count>=limit, serialized by member generation; existing temporary mute settings retain their action_minutes behavior until explicitly selecting a warning mode. Explicit ban/mute modes are permanent; tban/tmute require60s–365d durations. Warning age policy is captured for newly issued records; changing a positive duration is prospective. Off cancels not-yet-expired ages without resurrecting already-expired/deleted history. This timing choice is explicit because the supplied digest does not specify retroactive re-age semantics.
+
+Approvals currently exempt message-based flood/lock/blocklist/newbie/AI policies, while manual authority remains independent. Join/CAPTCHA/CAS/raid/federation/night precedence is completed and documented in those later feature phases rather than inferred from generic exemption. Approval lists paginate1000 entries per page and use files above30 entries/3000 characters.
+
+Purge operations select message IDs, never claim confirmed deletion counts. Operational cap300 by existing GuardSettings; an oversized range denies rather than silently claiming a truncated operation. Two endpoints bind actual human/chat/topic for10min and use a one-use Redis claim. Anonymous assumption cannot identify an endpoint owner; endpoints need an attributable human.
+
+Anonadmin off is default. Explicit on allows only same-group anonymous actor, bounded by this bot’s current rights, excluding creator authority; it does not invent a human identity. Public admin lists/reports exclude anonymous identities. Private audit actor_id0 denotes unattributed assumption and records actor_kind/assumed_anonymous explicitly. Owner actions still require the real creator (or a real creator reviewing an anonymous request).
+
+Original channel /setlog needs a server-observed bot-scoped receipt, actual forwarding origin and fresh administrator authority in both source/destination. The numeric shortcut remains an extension. All six categories default on; actual user leave logging stops at>=50 members and unknown count skips that log. Silent manual variants preserve private audit/configured log evidence independently of group confirmation.
+
+Restriction intents now commit source/generation/state before the RPC. Cancellation after a real mute leaves pending evidence, then uncertain recovery; CAPTCHA cannot clear it. Failed known calls restore prior ownership, and successful/partial effects retain actual ownership. This closes a restart gap found during the Phase2 review and adds state through additive migration0011.
+
+## Phase3 content decisions
+
+The authoritative S37 addendum wins over the digest's quoted multiword note example. New names are single words, optionally quoted; old broad names and HTML stay readable as a legacy extension. Repeat/repeated are explicit aliases,60s–30d local cadence bounds. Private/admin cadence is denied; current author authority and access policy are rechecked. Noprivate remains an explicit group-delivery override. One catch-up avoids restart bursts. Dispatched uncertainty pauses instead of blind resend, with explicit resave needed to renew generation.
+
+Controls across random alternatives are captured as one conservative union so a random branch cannot relax note access. Every alternative is validated, up to50; raw source32768 characters, row8/total100 buttons. Telegram's actual command bound1..32 takes precedence over the supplied fewer-than32 prose. Suggestions are chat scoped, preserve advertised core commands and report partial registration failures. Helper `/button`, `/clearall confirm`, filterprefix/filterexact and rulesbutton are documented clone conveniences, not claims of exact Rose command spelling.
+
+Five-minute cleanup means prior owned welcome IDs are scheduled300s after their replacement. The latest welcome remains; service cleaning and CAPTCHA ownership are separate. Source timing wording is condensed, so this scheduling interpretation is explicit. Caption overflow keeps full text as a companion. Content-protection is the real Telegram flag. Media greetings and content menus use separate delivery/binding slots from verification. Reusable private tokens grant no authority beyond fresh group membership and content access policy.
+
+## Phase4 verification decisions
+
+Welcomes are required for new CAPTCHA issuance; saved content/reset is independent. Existing issued generations retain captured policy when settings change. Button default remains. Canonical kick5m..1day overrides legacy captcha_minutes; old scalar/panel durations stay readable. Kick default on preserves prior behavior. Kick off uses a24h interactive-card lifetime; expiry retains its own mute. Automatic release is off by default, explicit60s..1day; the first applicable kick/release generation outcome wins. The auto-release job uses captured issuance time and does not mark a human. Wrong-answer local failure policy is a one-hour own temporary ban; this is a documented local duration, not an invented exact Rose duration.
+
+Approvals bypass group CAPTCHA/newbie message automation, while CAS and federation ownership remain independent security checks; raid/federation precedence belongs to their later stages. Request approvals cannot override any active owned ban. Contact time is original request.date+300s from server's integer date; no local issuance-time extension. Frozen rules must be accepted after actual image/button success; no hidden settings shortcut. Known final release refusal may retry within the original deadline, unknown mutation cannot.
+
+Recovering unattached issuance refunds only its own transient mute after240s; failed/unknown ownership remains explicit. Three wrong guesses and unsolved timeout are different policies. Known partial kick gets a fenced compensation job that only unbans, preventing an accidental permanent ban or duplicate ban. Actual membership can retire only CAPTCHA's no-deadline interrupted-kick intent; timed punitive/manual/fed holds remain. Ban removal with an unrelated mute must actually unban, keep SQL mute ownership, then reapply that mute on join. Ancillary prompt cleanup occurs after committed primary state/intents.
+
+Semantic join dedupe retains hash-only receipts at least seven days, using actual server date/status/actor and scope. Identical otherwise-unobservable same-second events have an unavoidable identity limit; inactive namespaces do not claim new work. Interrupted processing is uncertain rather than automatically replayed. Tests retain generation-fence assertions with explicit reset/fresh server events; repeat fixture uses deterministic distinct due identities to avoid clock-second collisions. No test/dependency suppression.
+
+## Phase5 lock decisions
+
+Separate canonical voice/videonote while retaining old stored voice's broad behavior through storage-only normalization. Canonical deltas store url for links alias; older panel/authorization test retains its authority/side-effect assertions with updated storage expectation. All selector expands roster, no-lock default preserved. Admin exception includes Telegram's own-group anonymous administrative sender identity; it never identifies a fictional person or grants mutation authority beyond existing review/anonadmin contract.
+
+Local deterministic multi-hit order delete<warn<kick<tmute<mute<tban<ban, longer duration for equal mode; explicit per-lock mode supersedes global lockwarns. At most one primary sanction/warning and one deletion. Sender-channel ban uses dedicated API whose documented effect affects that owner's channels in this chat. No human attribution is inferred for channel timed/mute/warn modes; primary failure remains explicit. Unknown pack/identity/member metadata grants no exception. Comment/outsider policies require actual linked discussion and nonmember evidence.
+
+Public Telegram links classified as chat/invite references, bot-suffix URLs as bot-link local predicate; exact private invite token distinct. Numeric chat exception requires actual public target API proof or bot-observed invite target metadata, retained hash-only30 days. Arbitrary opaque invitation target cannot be resolved by the SDK, so no fake exception. Percent-encoded dot/structural segments canonicalized before path boundaries; unresolved deep encoding/backslashes/control bytes reject. Custom pack exceptions bind every custom emoji ID; normal/unrelated emoji still violate configured locks. Rich/live/paid visible media use actual SDK fields, no token-only selectors.
+
+Reaction removal methods are present in installed SDK3.31 with delete-messages right, not proof that a deployed server supports them. Explicit SDK failure is logged/retained. Anonymous aggregate update lacks user/actor-chat ID required by available methods; record anonymous_actor_unavailable instead of fabricating identity/removal or deleting unrelated original content. This is an exact remaining API limitation in three ledger subsets; attributable paths are actual enforced/tested. Receipt retention at least seven days, processing interruptions uncertain. No global impossible assumption or deployed success self-certificate.
+
+## Phase6 blocklist decisions
+
+Canonical typed grammar follows declared lookalike:/username: prefixes; source exact-example/inline-description typos preserved as deviations. Word boundary uses Unicode letters/digits/underscore, accent normalization NFKD and combining mark removal with casefold and repeated whitespace collapse. Curated visual confusables explicitly approximate the source lookalike idea. Bounds are local hardening, not sourced Rose limits. Raw patterns256/max32 wildcards/source32768 and bitset NFA avoid exponential execution. Legacy phrase raw values/unknown config survive, wildcard characters remain literal, long legacy phrases remain available as literals.
+
+First stored matching entry decides one primary policy; insertion/update order is stable, unlike highest-rank lock policies. Entry reason and action independently override defaults. Profile username accepts optional @; full observed name/username matched as whole patterns. No unseen profile-change detection. Join warning/mute coexists with CAPTCHA, delete-only has no message and continues verification; ban/kick consumes join before CAPTCHA. Admin/approval exempt blocklists; separate CAS and existing owned restrictions keep existing join precedence. Unattributable message can be actually deleted without fictional human punishment. Silent consent and configured log gate enforced now, management/UI in8; failure/removal yields loud fallback and separate audit evidence. Connected PM/disable metadata/UI/locales retain8/11 ownership.
+
+## Phase7 boundaries and ownership
+
+Keep legacy time-window default6/8s and >N; new consecutive defaultoff and >=N. Source examples differ; chosen boundaries local/explicit. Arrival order observed at atomic Redis execution, not guaranteed global Telegram ordering. All other origins break consecutive eligible human run. First configured threshold claim merges actual observed IDs (≤101 combined), clearflood never invents a numeric message range. Permanent selected modes differ from preserved legacy timed automatic defaults. Automatic silent selection needs current creator consent/log and preserves manual silent behavior. Unknown Redis state yields diagnostic without fictitious sanction.
+
+Raids exclude current admins/approved/bots from automatic threshold and removal; CAS/existing owned security bans stay independent before raid, profile/newbie/CAP after. Federation service/graph priority integrates10 via existing strong owned-ban interface. Active and ban policies independent6h/1h defaults, activation freezes ban period. Off does not undo already applied restrictions, resets automatic counter generation. Late historical join does not trigger fresh minute. Requests decline with exact invite right and semantic receipt; future CAP approval blocked during active raid. Stale generation and revoked roles checked after committed intent before RPC. Unknown outcome retained conservatively.
+
+Night same-window superseded permissions are not immediately overwritten; additive policy version lets explicit new configuration rearm. Prepared snapshot resumes only with unchanged observed defaults/current schedule; dispatched unknown state never blindly repeats. Known failure retries, missing defaults never mean OPEN. Durable cursor progress avoids failing first records starving others. Factory coordinator records grant no authority; active namespace required for ordinary work. Explicit lifecycle cleanup uses separate private owned context; inability to restore due API/identity remains failure evidence, never a claimed successful open. Identical external permission changes cannot identify remote ownership from Telegram's snapshot alone.
+
+## Phase 8 compatibility and scope
+
+Preserve source disableable names independently of executable semantics. runs/saved remain explicit unsupported compatibility diagnostics; antiflood is a deliberately narrow local status alias. Federation names in a catalog do not establish their Phase9/10 implementation. Exact private source messages cannot be treated as group message IDs. Confirmations for connected configuration may be sent to the logical group; reads/previews reply to the actual private source.
+
+Bot cleanup all expands three supported categories; active verification/help/settings cards are not removed by that expansion. Perma-pin and echo outputs count as action, so selecting action permits their delayed removal. Welcomes use general/configured action topic, while ordinary note/filter replies keep their actual message context. Unknown delivery/delete outcomes remain uncertain rather than being retried blindly. Campaign completion is expansion plus terminal destination work, with actual outcome counts available to the owner.
+
+Name-based matching strips optional supported diacritics while preserving essential script marks; this does not claim universal visual Unicode equivalence. Group native payment registration is a narrow shared-core correctness repair authorized by the cumulative task. Full Rose source, production Bot API behavior and BotFather visibility remain unobserved; complete UI/31 actual translations and independent final review remain later work.
+
+## Phase 9 domain and confirmation decisions
+
+Our federation UUIDs are local to each bot and do not copy Rose network trust. Source roles are separate: owner/admin versus actual Telegram group creator/admin versus platform/child owner. No ownership transfer/global ban/cross-bot service is added. Names64 codepoints follow the supplied truncation requirement; empty/control input is rejected. New required reasons defaultoff, quiet defaultoff are local choices; owner notifications defaulton is sourced.
+
+All private federation reads/mutations retain own-or-explicit UUID context independently of group connections. Group disablement controls group fedinfo/fedadmins; it does not hide publicly readable federation records addressed explicitly in a private conversation. Admin/myfeds lists are bounded with explicit continuation syntax. Private @username verification searches at most50 actual federation groups; an unverified target gets a diagnostic and can use a positive ID.
+
+Owner confirmation is required for irreversible federation deletion and new log destination, including actual channel setup. It freezes revision for five minutes; unrelated federation changes invalidate it and require a fresh request. No extra administrator-promotion consent is invented. Role/configuration changes remain committed after transport failure, with separate real failure/audit evidence. Deletion does not mass-unban Telegram; ban/provenance retirement belongs10. Required-reason/quiet policy selectors are explicitly partial until10 enforces them. Full UI/translations and final independent review remain11/12.
+
+## Phase 10 bounded graph and conservative ownership
+
+Directed local subscriptions have no Rose network trust. Choose explicit caps32 direct/128 reached/depth16/10k namespace edges, file2MiB/1,000 records, producer/destination100 batches and destination backlog5000. Root metadata jobs do not count toward the destination cap, avoiding producer starvation. Share20/sec quota with group campaigns and keep local deferral outside API retry attempts. These are local limits; the30-minute ban-list interval is from the supplied digest.
+
+Actual requests count as observed user/group signals without asserting membership, allowing a later owned release for a ban applied during request processing. No full member inventory or history enumeration is attempted. Existing committed security policy persists when its old issuer is later demoted, but the revoked issuer's active outbox work is denied. A new valid observation/attachment applies current policy under internal authority. Federation checks precede generic approvals and newcomer verification; actual Telegram admins remain protected.
+
+Known/current owned ban proof can satisfy multiple active federation policies; dropping one source cannot remove another. Pre-existing external bans are not claimed. Unknown ownership cannot authorize automatic unban and is retained even after inactive intent, while generic rejoin cannot turn inactive policy into a new ban. Federation deletion/leave retires local fed provenance without undoing real bans, preserving ordinary fresh manual control and unrelated restrictions. Telegram cannot identify another administrator's identical ban from a member DTO; no external ownership certificate is asserted.
+
+CSV emits reversible apostrophe encoding for spreadsheet-active text; our JSON-array adapter is separate from true newline JSON. Validate all records before effects; identical duplicates coalesce, conflicting duplicates reject all. Imported actor/owner/fed namespace/date values do not install trust. Status output is bounded20 with explicit source query; full pagination and public bot/anonymous read policy/UI are finalized11. Unknown full Rose export schemas/live behavior remain unverified, not a reason to omit own-format functionality.
+
+## Final data/UI/source reconciliation
+
+Own module schema only; foreign Rose full exports have no verified adapter. Five-minute local data execution/confirmation interval and personal deletion interval; no exact Rose interval/retention equivalence asserted.19 safe subject inventory sections,200-row typed pages/2MiB. Retain active security/versions/order/roles/ownership/payments/platform preferences/global profile and uncertainty; no blanket period or Telegram/backup erasure. Selected CAP/night/raid/repeat replacement retires transient ownership without releasing real punitive bans. Pure allowlist validation avoids accidental message-identity requirements.
+
+All31 published471-message native module bundles plus defaultEN,25 complete159-message native platform overrides and complete core/same-language bases.18 native family guides; concise labelled variables preserve contracts; native language peer review remains outstanding. Chinese Taiwan is same-language authoring-only standard OpenCC0.1.7 adaptation, no production dependency. Localized GroupGuard start/help deliberately retained; unseen Rose runtime help remains unknown. Parsed source cache is bounded and resolver/argument state isolated.
+
+Final audit fixed missing platform privacy inventory, selected raid retirement, nested owned-CAP semaphore deadlock, nonempty allowlist import, unassigned /info federation hook/anonymous pseudo identity, and child encrypted-token/record namespace mismatch. Current code tested across standalone and actual two children. Source questions Q01–Q10 preserve uncertainty alongside explicit local semantics/defaults; all stable IDs remain. Optional actual CAS/AI/deployed API/full Rose/live behavior remain unverified. No transfer/global/cross-bot Rose trust or inferred external restriction ownership introduced.

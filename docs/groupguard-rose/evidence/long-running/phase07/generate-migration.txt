@@ -1,0 +1,2 @@
+usage: __main__.py makemigrations [-h] -m MESSAGE
+__main__.py makemigrations: error: the following arguments are required: -m/--message

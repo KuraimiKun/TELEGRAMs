@@ -1,0 +1,155 @@
+........................................................................ [ 52%]
+...........F............F............F.............FFFFFF...FFF...       [100%]
+=================================== FAILURES ===================================
+_ test_all_typed_actual_evidence_and_no_neighbor_match[standalone-file:evil*.pdf-caption-extra5] _
+tests/bots/groupguard/test_phase06.py:90: in test_all_typed_actual_evidence_and_no_neighbor_match
+    assert api.calls('DeleteMessage')[-1].message_id == request.message.message_id
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:17:59 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=groupguard bot_id=123456 target=-1001234567890 update_id=5421 user_id=10
+_ test_all_typed_actual_evidence_and_no_neighbor_match[child-A-file:evil*.pdf-caption-extra5] _
+tests/bots/groupguard/test_phase06.py:90: in test_all_typed_actual_evidence_and_no_neighbor_match
+    assert api.calls('DeleteMessage')[-1].message_id == request.message.message_id
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 21:18:03 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 21:18:03 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:03 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=c710011 bot_id=710011 target=-1001234567890 update_id=5497 user_id=10
+_ test_all_typed_actual_evidence_and_no_neighbor_match[child-B-file:evil*.pdf-caption-extra5] _
+tests/bots/groupguard/test_phase06.py:90: in test_all_typed_actual_evidence_and_no_neighbor_match
+    assert api.calls('DeleteMessage')[-1].message_id == request.message.message_id
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   IndexError: list index out of range
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 21:18:09 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 21:18:09 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:09 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=c710012 bot_id=710012 target=-1001234567890 update_id=5573 user_id=10
+_ test_join_and_observed_profile_change_without_synthetic_message[standalone] __
+tests/bots/groupguard/test_phase06.py:141: in test_join_and_observed_profile_change_without_synthetic_message
+    assert not api.calls('DeleteMessage') and (await verification.state_of(env, GROUP, MEMBER)) is None
+                                                        ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'bots.groupguard.challenges' has no attribute 'pending'
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:15 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=groupguard bot_id=123456 target=-1001234567890 update_id=5709 user_id=10
+___ test_join_and_observed_profile_change_without_synthetic_message[child-A] ___
+tests/bots/groupguard/test_phase06.py:141: in test_join_and_observed_profile_change_without_synthetic_message
+    assert not api.calls('DeleteMessage') and (await verification.state_of(env, GROUP, MEMBER)) is None
+                                                        ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'bots.groupguard.challenges' has no attribute 'pending'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 21:18:16 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 21:18:16 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:16 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=c710011 bot_id=710011 target=-1001234567890 update_id=5712 user_id=10
+___ test_join_and_observed_profile_change_without_synthetic_message[child-B] ___
+tests/bots/groupguard/test_phase06.py:141: in test_join_and_observed_profile_change_without_synthetic_message
+    assert not api.calls('DeleteMessage') and (await verification.state_of(env, GROUP, MEMBER)) is None
+                                                        ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'bots.groupguard.challenges' has no attribute 'pending'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 21:18:16 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 21:18:16 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:16 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=c710012 bot_id=710012 target=-1001234567890 update_id=5715 user_id=10
+_ test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target[standalone] _
+tests/bots/groupguard/test_phase06.py:158: in test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target
+    assert (await verification.state_of(env, GROUP, MEMBER)).status == 'pending' and not api.calls('DeleteMessage')
+                 ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'bots.groupguard.challenges' has no attribute 'pending'
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:17 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=groupguard bot_id=123456 target=-1001234567890 update_id=5718 user_id=10
+_ test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target[child-A] _
+tests/bots/groupguard/test_phase06.py:158: in test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target
+    assert (await verification.state_of(env, GROUP, MEMBER)).status == 'pending' and not api.calls('DeleteMessage')
+                 ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'bots.groupguard.challenges' has no attribute 'pending'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 21:18:17 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 21:18:17 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:17 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=c710011 bot_id=710011 target=-1001234567890 update_id=5721 user_id=10
+_ test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target[child-B] _
+tests/bots/groupguard/test_phase06.py:158: in test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target
+    assert (await verification.state_of(env, GROUP, MEMBER)).status == 'pending' and not api.calls('DeleteMessage')
+                 ^^^^^^^^^^^^^^^^^^
+E   AttributeError: module 'bots.groupguard.challenges' has no attribute 'pending'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 21:18:18 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 21:18:18 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:18 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=c710012 bot_id=710012 target=-1001234567890 update_id=5724 user_id=10
+_______ test_warning_replay_edit_and_denied_capability_union[standalone] _______
+tests/bots/groupguard/test_phase06.py:195: in test_warning_replay_edit_and_denied_capability_union
+    await send(env, Update(update_id=changed.update_id+100000, edited_message=changed.message.model_copy(update={'text': 'casino', 'edit_date': utcnow()})))
+tests/bots/groupguard/test_phase01a.py:157: in send
+    await build_dispatcher_once(ctx).feed_update(ctx.bot, update)
+.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py:161: in feed_update
+    update = Update.model_validate(update.model_dump(), context={"bot": bot})
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for Update
+E   edited_message.edit_date
+E     Input should be a valid integer [type=int_type, input_value=datetime.datetime(2026, 1...o=datetime.timezone.utc), input_type=datetime]
+E       For further information visit https://errors.pydantic.dev/2.13/v/int_type
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:20 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=groupguard bot_id=123456 target=-1001234567890 update_id=5757 user_id=10
+________ test_warning_replay_edit_and_denied_capability_union[child-A] _________
+tests/bots/groupguard/test_phase06.py:195: in test_warning_replay_edit_and_denied_capability_union
+    await send(env, Update(update_id=changed.update_id+100000, edited_message=changed.message.model_copy(update={'text': 'casino', 'edit_date': utcnow()})))
+tests/bots/groupguard/test_phase01a.py:157: in send
+    await build_dispatcher_once(ctx).feed_update(ctx.bot, update)
+.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py:161: in feed_update
+    update = Update.model_validate(update.model_dump(), context={"bot": bot})
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for Update
+E   edited_message.edit_date
+E     Input should be a valid integer [type=int_type, input_value=datetime.datetime(2026, 1...o=datetime.timezone.utc), input_type=datetime]
+E       For further information visit https://errors.pydantic.dev/2.13/v/int_type
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 21:18:20 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 21:18:20 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:20 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=c710011 bot_id=710011 target=-1001234567890 update_id=5765 user_id=10
+________ test_warning_replay_edit_and_denied_capability_union[child-B] _________
+tests/bots/groupguard/test_phase06.py:195: in test_warning_replay_edit_and_denied_capability_union
+    await send(env, Update(update_id=changed.update_id+100000, edited_message=changed.message.model_copy(update={'text': 'casino', 'edit_date': utcnow()})))
+tests/bots/groupguard/test_phase01a.py:157: in send
+    await build_dispatcher_once(ctx).feed_update(ctx.bot, update)
+.venv/lib/python3.12/site-packages/aiogram/dispatcher/dispatcher.py:161: in feed_update
+    update = Update.model_validate(update.model_dump(), context={"bot": bot})
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for Update
+E   edited_message.edit_date
+E     Input should be a valid integer [type=int_type, input_value=datetime.datetime(2026, 1...o=datetime.timezone.utc), input_type=datetime]
+E       For further information visit https://errors.pydantic.dev/2.13/v/int_type
+---------------------------- Captured stdout setup -----------------------------
+2026-10-12 21:18:20 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-12 21:18:20 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-12 21:18:20 [info     ] admin_action                   action=gg_blocklist_change admin_id=10 bot=c710012 bot_id=710012 target=-1001234567890 update_id=5773 user_id=10
+=============================== warnings summary ===============================
+tests/bots/groupguard/test_phase06.py::test_warning_replay_edit_and_denied_capability_union[standalone]
+tests/bots/groupguard/test_phase06.py::test_warning_replay_edit_and_denied_capability_union[child-A]
+tests/bots/groupguard/test_phase06.py::test_warning_replay_edit_and_denied_capability_union[child-B]
+  /workspace/TELEGRAMBOTS/.venv/lib/python3.12/site-packages/pydantic/main.py:475: UserWarning: Pydantic serializer warnings:
+    PydanticSerializationUnexpectedValue(Expected `int` - serialized value may not be as expected [field_name='edit_date', input_value=datetime.datetime(2026, 1...o=datetime.timezone.utc), input_type=datetime])
+    return self.__pydantic_serializer__.to_python(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/bots/groupguard/test_phase06.py::test_all_typed_actual_evidence_and_no_neighbor_match[standalone-file:evil*.pdf-caption-extra5]
+FAILED tests/bots/groupguard/test_phase06.py::test_all_typed_actual_evidence_and_no_neighbor_match[child-A-file:evil*.pdf-caption-extra5]
+FAILED tests/bots/groupguard/test_phase06.py::test_all_typed_actual_evidence_and_no_neighbor_match[child-B-file:evil*.pdf-caption-extra5]
+FAILED tests/bots/groupguard/test_phase06.py::test_join_and_observed_profile_change_without_synthetic_message[standalone]
+FAILED tests/bots/groupguard/test_phase06.py::test_join_and_observed_profile_change_without_synthetic_message[child-A]
+FAILED tests/bots/groupguard/test_phase06.py::test_join_and_observed_profile_change_without_synthetic_message[child-B]
+FAILED tests/bots/groupguard/test_phase06.py::test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target[standalone]
+FAILED tests/bots/groupguard/test_phase06.py::test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target[child-A]
+FAILED tests/bots/groupguard/test_phase06.py::test_delete_only_join_continues_captcha_and_nonhuman_no_fabricated_target[child-B]
+FAILED tests/bots/groupguard/test_phase06.py::test_warning_replay_edit_and_denied_capability_union[standalone]
+FAILED tests/bots/groupguard/test_phase06.py::test_warning_replay_edit_and_denied_capability_union[child-A]
+FAILED tests/bots/groupguard/test_phase06.py::test_warning_replay_edit_and_denied_capability_union[child-B]
+12 failed, 126 passed, 3 warnings in 46.60s

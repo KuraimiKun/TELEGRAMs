@@ -1,0 +1,22 @@
+{
+  "workload": "32 installed locale bundles per isolated Translator",
+  "cold_seconds": 2.4647845660000485,
+  "warm_seconds": [
+    0.02209362600001441,
+    0.02084529000001112,
+    0.01701722100006009,
+    0.022841960000050676,
+    0.04107027999998536
+  ],
+  "cache": {
+    "hits": 323,
+    "misses": 61,
+    "maxsize": 256,
+    "currsize": 61
+  },
+  "python": "3.12.14",
+  "system": "Linux",
+  "logical_cpus": 5,
+  "max_rss_kib": 83124,
+  "scope": "local constructor/argument isolation; no production throughput claim"
+}

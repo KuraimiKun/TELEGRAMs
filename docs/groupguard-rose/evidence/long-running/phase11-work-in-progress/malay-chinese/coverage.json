@@ -1,0 +1,17 @@
+{
+  "ms": {
+    "module_messages": 471,
+    "platform_messages": 159,
+    "variables_match": true
+  },
+  "zh-cn": {
+    "module_messages": 471,
+    "platform_messages": 159,
+    "variables_match": true
+  },
+  "zh-tw": {
+    "module_messages": 471,
+    "platform_messages": 159,
+    "variables_match": true
+  }
+}

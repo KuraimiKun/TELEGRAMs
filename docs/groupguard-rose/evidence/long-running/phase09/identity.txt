@@ -1,0 +1,4 @@
+Starting HEAD:fdc3a61
+Branch:work
+Source/test identity:worktree.sha256 actual tracked and untracked non-document files
+Full gate:1409 passed/88 skipped;service86 separately passed;standalone factory skips2

@@ -1,0 +1,16 @@
+........................................................................ [ 16%]
+........F............................................................... [ 32%]
+........................................................................ [ 49%]
+........................................................................ [ 65%]
+........................................................................ [ 82%]
+........................................sssssssssssssssss............... [ 98%]
+.....                                                                    [100%]
+=================================== FAILURES ===================================
+___________ test_malformed_html_and_invalid_encoding_are_controlled ____________
+tests/bots/doctools/test_review.py:77: in test_malformed_html_and_invalid_encoding_are_controlled
+    with pytest.raises(CitationError):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE CitationError
+=========================== short test summary info ============================
+FAILED tests/bots/doctools/test_review.py::test_malformed_html_and_invalid_encoding_are_controlled
+1 failed, 419 passed, 17 skipped in 106.62s (0:01:46)

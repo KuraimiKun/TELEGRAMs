@@ -1,0 +1,19 @@
+# Stage1B routing/protection/delivery
+
+Starting checkpoint45cfaf6 (Phase1A implementation plus closure/provenance). No reset/replay. Local gate passed; continuing automatically.
+
+Actual shared-core additions: BotModule.message_pipeline(ctx)->BaseMiddleware|None (defaultNone), priority_routers(ctx)->list[Router] (default[]), required_update_types()->frozenset[str] (defaultempty). Dispatcher mounts module pipeline on message/edited_message before maintenance/ban/throttle and registers narrow priority routers before core. GroupGuard restricts early routes to its group commands and bound gs_ panel; private generic core stays functional. allowed_update_types(ctx,dp) unions observed/explicit events for standalone webhook/polling. Factory static superset adds message_reaction/count for both modes.
+
+ProtectMiddleware classifies actors without blanket bot/channel exemption; only current attributable human/bot admins or own bot bypass locks. Anonymous/channel/ordinary bots are checked and never human-sanctioned through pseudo IDs. EventIdentity(bot_id,chat_id,message_id,update_id,edited,content_version) supplies content digest; edited content does not count flood/newbie messages. Payments and join/leave service events reach functional handlers. Default locks still precede blocklists; full reaction removal is Phase5, not simulated by subscriptions.
+
+Changed production: core/sdk/module.py,core/runtime/dispatcher.py,core/runtime/gateway.py,core/factory/webhooks.py,bots/groupguard/module.py,bots/groupguard/protect.py. New tests test_phase01b.py; ledger/contracts/progress/report/evidence updated. No schema/dependency/config/default changes. SDK3.31.0 contains required event models; BotFather privacy/admin/reaction support are deployment prerequisites, not live certification.
+
+Acceptance: blocked /terms,/admin,/support before REAL throttle (test explicitly restores actual middleware); private terms remains functional. Edited captions/hidden URL entities delete without ZSET increment. Ordinary bots/sender channels with locked links deleted, no human sanction. gs_ authorized PM panel opens; member denies. Required updates asserted for standalone/child modes. All four scenarios parameterized standalone/actual ChildRegistry children710011/710012.
+
+Checks: .venv/bin/pytest tests/bots/groupguard/test_phase01b.py tests/bots/groupguard/test_groupguard.py -q --tb=short:20pass exit0; .venv/bin/ruff check . exit0; .venv/bin/mypy246files pass; .venv/bin/python -m core bots9contracts. Full .venv/bin/pytest -q --tb=short:386pass,1knownDocToolsfail,4service skips exit1; nonewfail. TEST_DATABASE_URL=postgresql+asyncpg://gglong@127.0.0.1:55433/gg_long_integration TEST_REDIS_CLAIM_URL=redis://127.0.0.1:56380/1 .venv/bin/pytest tests/integration -q --tb=short:3pass. TEST_DATABASE_URL=postgresql+asyncpg://gglong@127.0.0.1:55433/gglong TEST_REDIS_URL=redis://127.0.0.1:56380/0 .venv/bin/pytest tests/e2e -q --tb=short:1pass. New dedicated gg-long-postgres/redis retained for following stages; no shared/onboarding services touched. Test fixture errors were fixed to use integer SDK edit_date and actual localized panel text, not relaxed production guards.
+
+P02/P03/P04/P09 mapped via stable GG-FOUND-edited/core-precedence/reaction-subscription and GG-START-settings. Whole ledger818 rows, implementation190partial/17testedsubset; other statuses unchanged. Current1B foundation3/3testedsubset. Parent lock/reaction families remain incomplete until Phase5. Source retrieval stillCONNECT403; reviewer digest is legitimate supplied evidence.
+
+Next1C: revisioned patches, serialized warnings/intent claims, generation-fenced SQL challenges and owned restrictions/night state, durable bounded jobs/inbox, exact replay/child lifecycle tests. Remaining data races not marked fixed by1B.
+
+Local checkpoint recorded; continuing according to LONG_RUNNING_MASTER_PLAN.md.

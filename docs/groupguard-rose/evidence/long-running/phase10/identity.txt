@@ -1,0 +1,5 @@
+Starting completed gate:57823e1
+Intermediate client autosave:593c6c3
+Branch:work
+Source/test actual tracked and untracked identity:worktree.sha256
+Full:1463 passed/97 skipped;services95 separately passing;standalone factory skips2

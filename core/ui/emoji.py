@@ -1,0 +1,31 @@
+"""Consistent emoji constants for platform design system."""
+
+from __future__ import annotations
+
+
+class E:
+    OK = "✅"
+    ERR = "❌"
+    WARN = "⚠️"
+    INFO = "ℹ️"
+    VIP = "⭐"
+    BACK = "⬅️"
+    CLOSE = "✖️"
+    REFRESH = "🔄"
+    SETTINGS = "⚙️"
+    USERS = "👤"
+    STATS = "📊"
+    BROADCAST = "📢"
+    CHANNELS = "📡"
+    LANG = "🌍"
+    HELP = "❓"
+    TERMS = "📜"
+    SUPPORT = "💬"
+    TIME = "⏱"
+    WAIT = "⏳"
+    GIFT = "🎁"
+    GROUP = "👥"
+    EDIT = "✏️"
+    ADD = "➕"
+    DELETE = "🗑"
+    LOCK = "🔒"

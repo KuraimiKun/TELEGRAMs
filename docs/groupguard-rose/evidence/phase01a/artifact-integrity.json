@@ -1,0 +1,19 @@
+{
+  "Phase0B_files_retained": 71,
+  "unchanged": 63,
+  "modified_audit_paths": [
+    "ARCHITECTURE.md",
+    "DECISIONS.md",
+    "FEATURE_MATRIX.csv",
+    "FEATURE_MATRIX.md",
+    "LEDGER_COUNTS.json",
+    "MANIFEST.sha256",
+    "PLAN.md",
+    "SOURCE_COVERAGE.md"
+  ],
+  "all_812_starting_ids_retained": true,
+  "current_ids_unique": 818,
+  "no_DocTools_schema_dependency_changes": true,
+  "historical_reports_evidence_unchanged": true,
+  "rolling_manifest_note": "The current root manifest is refreshed; original manifest is retained in the Phase0B archive. Historical embedded manifests/reports/evidence remain unchanged."
+}

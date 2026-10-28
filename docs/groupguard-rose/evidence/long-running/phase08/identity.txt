@@ -1,0 +1,4 @@
+Starting HEAD: a51f5fe
+Branch: work
+Source and test identity: worktree.sha256 (actual tracked and untracked non-document files)
+Full gate:1370 passed/79 skipped; services77 separately passed, standalone factory skips2

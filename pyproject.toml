@@ -1,0 +1,99 @@
+[project]
+name = "telegram-bots-platform"
+version = "2.0.0"
+description = "Multi-tenant Telegram bot platform with downloads, anonymous inboxes, moderation, bot factory, CV and document tools"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram[redis]>=3.31,<4",
+    "yt-dlp[default]>=2026.8.19",
+    "gallery-dl>=1.32",
+    "bgutil-ytdlp-pot-provider>=1.0",
+    "sqlalchemy[asyncio]>=2.0.40",
+    "asyncpg>=0.30",
+    "alembic>=1.16",
+    "redis>=5.2",
+    "fluent.runtime>=0.4",
+    "pydantic>=2.10",
+    "pydantic-settings>=2.8",
+    "structlog>=25.1",
+    "prometheus-client>=0.21",
+    "sentry-sdk>=2.20",
+    # AI providers (pluggable; Claude by default)
+    "anthropic>=1.12",
+    "openai>=3.0",
+    # Bot factory token encryption
+    "cryptography>=44",
+    # Share cards, documents, CVs
+    "pillow>=11",
+    "arabic-reshaper>=3.0",
+    "python-bidi>=0.6",
+    "pymupdf>=1.26",
+    "pypdf>=5.4",
+    "python-docx>=1.1",
+    "httpx>=0.28",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.25",
+    "fakeredis[lua]>=2.28",
+    "aiosqlite>=0.21",
+    "ruff>=0.11",
+    "mypy>=1.13",
+    "pre-commit>=4.0",
+]
+
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["core*", "bots*"]
+
+[tool.setuptools.package-data]
+core = ["locales/**/*.ftl", "assets/fonts/*"]
+bots = ["*/locales/**/*.ftl"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = ["live: hits real websites (deselect with -m 'not live')"]
+addopts = "-m 'not live'"
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+# Alembic revisions are generated code.
+extend-exclude = ["core/db/migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "ASYNC", "SIM", "RUF"]
+ignore = ["E501", "RUF001", "RUF002", "RUF003", "RUF006", "RUF012", "B008", "ASYNC109", "ASYNC240"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["core", "bots"]
+plugins = ["pydantic.mypy"]
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+ignore_missing_imports = true
+exclude = ["core/db/migrations/versions/"]
+
+# redis-py types async commands as "Awaitable[T] | T", which mypy rejects in `await`; a known upstream issue.
+[[tool.mypy.overrides]]
+module = [
+    "bots.socialdownload.engine.queue",
+    "bots.socialdownload.engine.cache",
+    "core.sdk.quota",
+    "core.services.broadcast",
+    "core.runtime.scheduler",
+    "core.runtime.gateway",
+    "bots.cvbot.handlers",
+]
+disable_error_code = ["misc"]

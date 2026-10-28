@@ -1,0 +1,30 @@
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.schemas
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.tables
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.types
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.constraints
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.defaults
+INFO  [alembic.runtime.plugins] setting up autogenerate plugin alembic.autogenerate.comments
+INFO  [alembic.autogenerate.compare.tables] Detected added table 'gg_federations'
+INFO  [alembic.autogenerate.compare.tables] Detected added table 'gg_fed_admins'
+INFO  [alembic.autogenerate.compare.constraints] Detected added index 'ix_gg_fed_admins_user' on '('bot_id', 'user_id', 'fed_id')'
+INFO  [alembic.autogenerate.compare.tables] Detected added table 'gg_fed_chats'
+INFO  [alembic.autogenerate.compare.constraints] Detected added index 'ix_gg_fed_chats_federation' on '('bot_id', 'fed_id', 'chat_id')'
+INFO  [alembic.ddl.postgresql] Detected sequence named 'gg_broadcasts_id_seq' as owned by integer column 'gg_broadcasts(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'cb_nodes_id_seq' as owned by integer column 'cb_nodes(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'vip_grants_id_seq' as owned by integer column 'vip_grants(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'gg_items_id_seq' as owned by integer column 'gg_items(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'cv_reports_id_seq' as owned by integer column 'cv_reports(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'notes_notes_id_seq' as owned by integer column 'notes_notes(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'gg_warns_id_seq' as owned by integer column 'gg_warns(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'admin_audit_log_id_seq' as owned by integer column 'admin_audit_log(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'plans_id_seq' as owned by integer column 'plans(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'notes_reminders_id_seq' as owned by integer column 'notes_reminders(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'anon_messages_id_seq' as owned by integer column 'anon_messages(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'sd_downloads_id_seq' as owned by integer column 'sd_downloads(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'broadcasts_id_seq' as owned by integer column 'broadcasts(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'payments_id_seq' as owned by integer column 'payments(id)', assuming SERIAL and omitting
+Generating /workspace/TELEGRAMBOTS/core/db/migrations/versions/0017_gg_federations.py ...  done

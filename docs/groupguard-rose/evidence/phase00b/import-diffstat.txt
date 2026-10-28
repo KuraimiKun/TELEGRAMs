@@ -1,0 +1,66 @@
+ .env.example                                 |  31 +-
+ .gitignore                                   |   1 +
+ README.md                                    |  29 +-
+ bots/cvbot/__init__.py                       |   3 +
+ bots/cvbot/admin.py                          |  19 ++
+ bots/cvbot/config.py                         |   5 +
+ bots/cvbot/extraction.py                     | 103 +++++++
+ bots/cvbot/handlers.py                       | 441 +++++++++++++++++++++++++++
+ bots/cvbot/locales/ar/messages.ftl           |  87 ++++++
+ bots/cvbot/locales/en/messages.ftl           |  87 ++++++
+ bots/cvbot/models.py                         |  46 +++
+ bots/cvbot/module.py                         |  76 +++++
+ bots/cvbot/payments.py                       | 115 +++++++
+ bots/cvbot/pdf.py                            |  45 +++
+ bots/cvbot/schemas.py                        |  78 +++++
+ bots/cvbot/service.py                        | 228 ++++++++++++++
+ bots/cvbot/settings.py                       |  19 ++
+ bots/doctools/__init__.py                    |   5 +
+ bots/doctools/admin.py                       |  23 ++
+ bots/doctools/citations.py                   | 406 ++++++++++++++++++++++++
+ bots/doctools/config.py                      |  12 +
+ bots/doctools/handlers.py                    | 297 ++++++++++++++++++
+ bots/doctools/locales/ar/messages.ftl        |  79 +++++
+ bots/doctools/locales/en/messages.ftl        |  79 +++++
+ bots/doctools/models.py                      |  22 ++
+ bots/doctools/module.py                      |  77 +++++
+ bots/doctools/operations.py                  | 363 ++++++++++++++++++++++
+ bots/doctools/queue.py                       | 265 ++++++++++++++++
+ bots/doctools/service.py                     | 183 +++++++++++
+ bots/doctools/settings.py                    |  25 ++
+ bots/doctools/worker.py                      | 408 +++++++++++++++++++++++++
+ bots/groupguard/protect.py                   |   7 +-
+ core/ai/client.py                            |   6 +-
+ core/assets/fonts/NotoSans-Bold.ttf          | Bin 0 -> 575740 bytes
+ core/assets/fonts/NotoSansArabic-Bold.ttf    | Bin 0 -> 248468 bytes
+ core/assets/fonts/OFL.txt                    |  94 ++++++
+ core/db/migrations/versions/0008_cvbot.py    |  64 ++++
+ core/db/migrations/versions/0009_doctools.py |  37 +++
+ core/files.py                                |  16 +-
+ core/middlewares/throttling.py               |   1 +
+ core/routers/vip.py                          |  12 +-
+ core/sdk/module.py                           |   5 +
+ core/services/payments.py                    |  42 ++-
+ core/ui/cards.py                             |  55 ++--
+ docker-compose.yml                           |  18 ++
+ docs/BOT_SDK.md                              |  99 +++++-
+ docs/OPERATIONS.md                           | 131 +++++++-
+ pyproject.toml                               |   7 +-
+ tests/bots/cvbot/__init__.py                 |   0
+ tests/bots/cvbot/test_cvbot.py               | 404 ++++++++++++++++++++++++
+ tests/bots/doctools/__init__.py              |   0
+ tests/bots/doctools/test_citations.py        |  83 +++++
+ tests/bots/doctools/test_handlers.py         |  95 ++++++
+ tests/bots/doctools/test_operations.py       | 167 ++++++++++
+ tests/bots/doctools/test_queue.py            | 128 ++++++++
+ tests/bots/doctools/test_review.py           | 189 ++++++++++++
+ tests/bots/doctools/test_throttle.py         |  43 +++
+ tests/bots/doctools/test_worker.py           | 180 +++++++++++
+ tests/bots/socialdownload/test_network.py    |   5 +-
+ tests/conftest.py                            |   4 +-
+ tests/core/test_ai_admission.py              |  15 +
+ tests/core/test_files_cards.py               |  28 ++
+ tests/e2e/__init__.py                        |   1 +
+ tests/e2e/dev_launcher.py                    |  55 ++++
+ tests/e2e/test_platform_flow.py              | 394 ++++++++++++++++++++++++
+ 65 files changed, 5998 insertions(+), 44 deletions(-)

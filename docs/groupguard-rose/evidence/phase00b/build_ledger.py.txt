@@ -1,0 +1,370 @@
+from pathlib import Path
+import csv, re, json, collections, shutil
+
+ROOT = Path('/workspace/TELEGRAMBOTS/docs/groupguard-rose')
+HANDOFF = Path('/tmp/groupguard-phase00b-handoff')
+digest = (HANDOFF/'OFFLINE_SOURCE_DIGEST.md').read_text()
+sources = {}
+for code, title, body in re.findall(r'^## ((?:S|T)\d\d) — ([^\n]+)\n(.*?)(?=^## |\Z)', digest, re.M|re.S):
+    sources[code] = (title, re.search(r'https://[^)]+', body).group(), body.strip())
+old = list(csv.DictReader((ROOT/'history/PHASE_00/FEATURE_MATRIX.csv').open()))
+rows, byid = [], {}
+def add(id, refs, kind, syntax, behavior, acceptance, phase, permission='change_info for configuration; public reads', bot='Relevant Telegram capability at execution', status='not implemented', spec='specified', canonical=None, evidence='No dedicated acceptance test; audit-only contract', path='Proposed GroupGuard owning phase', question=''):
+    refs = refs.split(',') if isinstance(refs, str) else refs
+    r = dict(id=id, module=sources[refs[0]][0] if refs else 'Existing compatibility', source_refs=','.join(refs),
+             source_url_or_path=';'.join(sources[s][1] for s in refs) if refs else path,
+             source_section=','.join(refs), retrieval_or_inspection_date='2026-10-12 Asia/Jakarta',
+             provenance='reviewer-supplied digest' if refs else 'direct repository inspection',
+             rose_source_status='reviewer-supplied condensed specification; no direct retrieval' if refs else 'compatibility fact',
+             specification_status=spec, implementation_status=status, canonical_behavior_id=canonical or id, row_kind=kind,
+             command_event_syntax=syntax, semantics_defaults=behavior, caller_permissions=permission, bot_permissions=bot,
+             chat_types='As specified in source; commands also connected PM where applicable', standalone='acceptance required',
+             factory_child='separate bot namespace; acceptance required', existing_path_evidence=path, test_evidence=evidence,
+             gap_status=status, phase=str(phase), dependencies='1A authorization; 1B delivery; 1C transitions as applicable',
+             acceptance_scenario=acceptance, deviations_open_questions=question)
+    assert id not in byid, id
+    rows.append(r); byid[id]=r
+    return r
+
+# Preserve all non-planning IDs and their implementation facts, without promoting tested
+# subsets to verified Rose parity. The historical CSV preserves the old source claims.
+for o in old:
+    if o['id'].startswith('REQ-'): continue
+    r = add(o['id'], [], 'legacy', o['command_event_syntax'], o['semantics_defaults'], o['acceptance_scenario'], o['phase'],
+            o['caller_permissions'], o['bot_permissions'],
+            {'implemented-and-tested':'tested subset','existing-but-unverified':'existing-unverified','externally dependent':'unresolved historical evidence'}.get(o['gap_status'],o['gap_status']),
+            'legacy compatibility', evidence=o['test_evidence'],path=o['existing_path_evidence'],question='Keep established data/defaults. Historical parity claims superseded by this ledger.')
+    r['standalone']='existing; scope of tests recorded'
+    r['factory_child']='available template; parity requires separate acceptance'
+
+# Each semicolon-separated item below is an independent behavior/default/permission
+# row, with a specific acceptance check. Commands additionally get one spelling row.
+# S06 and S40 share a single connection family and source references.
+contracts = {
+'S01': (0, '', 'Navigation page: denominator only=>Account for all 50 navigation pages without inventing a moderation command'),
+'S02': (0, '', 'Add-to-group entry uses runtime bot identity=>Use a different test username and inspect the link; Onboarding explains required administrative rights=>An unprivileged bot describes missing rights without promising enforcement'),
+'S03': (0, '', 'Orientation: username resolution is limited=>Unknown username returns clear error and reply/ID alternatives, never a guessed user'),
+'S04': (1, '', 'Group and connected PM select the same target group=>Compare one setting through both entry points; Boolean on/yes/true and off/no/false=>Accept each spelling with identical stored boolean; Common durations m/h/d/w plus legacy seconds extension=>Validate units separately from module-specific bounds'),
+'S05': (2, 'id info', 'ID self/current group/reply/known username=>Each form returns the intended identity, distinguish negative chat IDs; Info self/reply/known username/ID with available profile membership and fedban=>Show available fields and clear unavailable-data errors'),
+'S06': (8, '', 'Introductory connection page shares S40 implementation=>Cover S06 and S40 using one connection service, not duplicate features'),
+'S07': (11, 'setlang', 'Selector and direct locale code affect group/connected responses=>Same selected language through group and PM paths; English-only Rose start/help with localized GroupGuard help retained=>Preserve existing Arabic/English help and label enhancement; Locale fallback is not translation parity=>Audit keys and rendered text independently for every locale'),
+'S08': (3, 'rules setrules resetrules privaterules setrulesbutton resetrulesbutton', 'Rules formatted read/set/reset=>Read stored formatting after update and reset content without changing access policy; Group delivery versus PM-opening rules button=>Toggle privateness and assert actual delivery; Rules button custom/reset label and {rules} filling=>Render custom then default label in supported content; Public rules access is separate from change-info mutation=>Deny settings mutation to member while allowing rules access'),
+'S09': (2, 'promote demote adminlist adminerror admincache anonadmin', 'Exact caller and bot rights for each operation=>Deny unrelated-admin right for settings/delete/restrict/pin/promote/topics; Promote caller/bot intersection excluding promote-members=>No newly promoted user gains promotion right; Demote only bot-editable appropriate admin role=>Reject non-editable admin target; Public adminlist omits anonymous admins=>No anonymous identity disclosed; Permission-error toggle is separate from authorization=>Off hides error but still denies mutation; Admincache refresh invalidates stale admin list=>Demotion then refresh removes authority; Anonymous default identifies human through button and checks actual rights=>Unidentified group sender cannot mutate; anonadmin on assumes admin rights but excludes owner=>Owner-only operation still denied; Owner-only operations require attributable creator=>Platform/factory/admin/channel identity never substitutes for group creator'),
+'S10': (2, 'pin permapin unpin unpinall antichannelpin cleanlinked', 'Reply pin is quiet by default and loud requests notification=>Assert Telegram disable_notification in both modes; Permapin sends formatted content then pins that new message=>No periodic repin scheduler created; Unpin latest or replied pin and unpinall=>Assert correct target/API for each variant; Automatic linked-channel post unpin=>Leave generic forward unaffected; Cleanlinked deletes discussion auto-forward=>Delete only linked-channel-origin post'),
+'S11': (2, 'approve approval approved unapprove unapproveall', 'Approve usual target with optional reason and status lookup=>Resolve reply/ID/known username and round-trip reason; Large approval list delivered as file=>Bound chat output and verify file contents; Unapproveall creator-only=>Ordinary admin cannot clear all; Approved users exempt from automated actions with manual authority separate=>Approved target still subject to authorized manual ban; Federation/newcomer/raid approval precedence unspecified=>Require explicit policy before implementing exemptions'),
+'S12': (2, 'del purge spurge purgefrom purgeto', 'Reply del deletes target and command with no completion message=>Inspect both deletes and absence of acknowledgement; Reply purge selects start through command=>Assert inclusive endpoints; Purge N starts at reply and selects N messages=>Assert count and operational cap; Non-reply purge-all absent=>Reject no-reply purge; Spurge suppresses completion=>No group confirmation while retaining truthful result; Two-step endpoints bind actor/chat=>Wrong actor/chat cannot finish range; Deletion limits and API acknowledgement require truthful counts=>Do not report submitted IDs as confirmed deleted count'),
+'S13': (2, 'setlog unsetlog logchannel logcategories log nolog', 'Channel setlog original command forwarded to group establishes destination=>Bot is channel admin, authenticate source/destination, reject fabricated forward; Authorized numeric setlog remains extension=>Retain existing shortcut without bypassing permission checks; Multiple groups can share one destination=>Each group remains independently authorized; Log category toggles all enabled by source default=>Toggle one category without overwriting others or live-group defaults; Leave logs stop at 50 members=>Test 49/50/51 boundary; Log delivery failure distinct from sanction=>No successful audit-delivery claim when send fails'),
+'S14': (2, 'ban tban dban sban unban mute tmute dmute smute unmute kick dkick skick', 'Targets reply/known username/ID with optional reason=>Unknown identity fails and negative chat ID is not a user target; Temporary aliases require a valid bounded duration=>Missing/invalid/zero/short/overlong time never becomes permanent; Delete-and-act variants require reply=>Reject dban/dmute/dkick without reply; Manual silent removes reply if present and command, suppresses confirmation=>Inspect deletion/sanction/log independently without automated gate; Kick removal allows rejoin=>Ban then unban failure reports partial outcome; Unban and unmute report real API outcome=>Mock failure cannot produce success; Target bot/admin protection and precise capability checks=>Reject protected target and missing caller/bot rights'),
+'S15': (2, 'warnings setwarnlimit setwarnmode warn dwarn swarn rmwarn resetwarn warns setwarntime warntime', 'Warnings settings versus user reasons list=>Both public read forms return intended data; Warning normal/delete/silent message effects=>Inspect command/reply deletion and acknowledgement separately; Latest warning removal versus button removal of one warning=>Button cannot remove unrelated newer warning; User reset clears all user warnings=>Scope to bot/chat/user; Per-warning age expiry and off disabling expiry=>Different issue times expire independently; Successful threshold sanction resets warnings, failed sanction retains history=>Mock API denial must not clear warnings; Limit versus going-over threshold ambiguous=>Separate exact-limit and above-limit cases for decision; setwarntime versus example warntime unresolved alias=>Do not claim exact spelling parity before decision'),
+'S16': (2, 'reports report', 'Reports enabled by source default=>Keep live-group defaults, enable new-group policy only explicitly; Reply report and @admin notify admins=>Same reported target and anonymous privacy; Local /admin and /admins aliases avoid platform private UI=>Group report cannot open platform admin controls'),
+'S17': (8, 'disabled disableable disable enable disabledel disableadmin', 'None disabled by source default=>Existing groups retain current settings; Disabled commands ignored with optional delete=>Verify no command side effect and configured deletion; Disableadmin includes admins but recovery remains available=>Privileged admin can restore settings; Catalog membership does not define command execution=>Keep runs/saved/antiflood/kickme semantics open when only catalog evidence'),
+'S18': (3, 'welcome setwelcome resetwelcome', 'Welcome show/boolean/noformat variants=>Each variant inspects or changes only intended state; Set welcome text or replied media/sticker optional caption=>Preserve file/content identity and render fillings; Reset content separate from enable/verification state=>Reset does not silently disable CAPTCHA; Canonical chatname and existing group/count fillings=>Render each with event context, retain legacy HTML'),
+'S19': (3, 'goodbye setgoodbye resetgoodbye', 'Goodbye show/boolean/noformat variants=>Each form preserves unrelated state; Text/replied media/sticker optional caption and reset=>Round-trip payload; Leaving user identity comes from event=>Service sender differing from departing user still fills departed user'),
+'S20': (8, 'cleanwelcome', 'Old welcome message cleanup after fixed five minutes=>Advance clock, only welcome messages expire; CAPTCHA/service-cleaning references point to existing source families=>No duplicated implementation features'),
+'S21': (0, '', 'Anti-spam navigation only=>Map locks/CAPTCHA/blocklist/flood/raid pages without extra commands'),
+'S22': (5, 'locks locktypes lock unlock lockwarns allowlist rmallowlist rmallowlistall', 'Locks list versus locks list syntax and locktypes=>Return configured and supported types separately; Multi-type lock/unlock with none locked by source default=>Change only chosen types, preserve existing defaults; Admin exemption and locks before blocklists=>Only intended first enforcement action occurs; Per-lock ### reason and {mode} override=>Keep per-type reason/action separate from global defaults; Lockwarns warning integration=>Warning result drives truthful feedback; rmallowlistall creator-only=>Admin cannot clear all; Linked discussion comment/outsidereaction nonmember detection=>Resolve actual membership with API guarantees; Entity/Unicode/media/origin/reaction classifiers distinct=>Negative neighboring type does not trigger typed lock'),
+'S23': (4, 'captcha captchamode setcaptchatext resetcaptchatext captchakick captchakicktime captcharules captchamutetime', 'Button default, other modes open PM=>Each challenge reaches correct destination and mode; Success releases verification mute and failure temporary ban=>Release only this challenge restriction and preserve unrelated sanction; Unsolved stay muted or configured kick=>Deadline follows issued settings snapshot; Remember success per group=>Another group still requires verification; Admin kick resets remembered success, voluntary leave retains=>Test distinct membership transitions; Welcomes required by source=>Validate dependency without destroying saved content; Captcha label plaintext with no fillings=>Literal braces remain literal; Join request PM then optional rules then approve/welcome=>Require invite-users and bounded contact window; Captcha kick deadline default5m and bounds5m..1day=>Test min/max/outside; Auto-release duration or off=>Issued challenge independent of later settings edits; Challenge identity/deadline independent of unrelated sanction=>Old callback cannot release or kick current generation'),
+'S24': (6, 'addblocklist blocklist rmblocklist rmblocklistall', 'Add word/quoted phrase/parenthesized comma triggers with shared reason=>Preserve multiword and per-entry content; Blocklist no-args lists and arguments add alias=>Explicit unambiguous grammar, retain local aliases; Remove single/phrase/multiple and creator-only clearall=>No unintended substring deletion; Embedded per-entry action modifier=>Round-trip modifier separate from trigger'),
+'S25': (6, 'blocklistmode blocklistdelete', 'Nothing default still deletes=>Matching message deleted without user sanction; Blocklistdelete off suppresses deletion but keeps selected action=>Mode and delete toggle are independent; Common temporary durations and per-entry override=>Invalid time fails and entry action overrides default'),
+'S26': (6, 'setblocklistreason resetblocklistreason', 'Full-word match with accent and repeated-space normalization=>Avoid substring false positive and test normalized equivalent; Default reason set/reset with entry override=>Entry reason wins then fallback; Silent per-entry action gated by S49, never default blocklist mode=>Reject default silent mode; Declared lookalike prefix versus exact typo=>Keep exact and lookalike separate, record canonical proposal; Declared username prefix versus inline prose typo=>Observed username pattern is distinct from inline origin; Clone name/username evaluated on joins and speaking=>No claim about unseen profile changes'),
+'S27': (7, 'flood setflood setfloodtimer setfloodmode clearflood', 'Consecutive-message limit differs from per-user window=>Different user breaks consecutive sequence but not another user window; Timer permits seconds=>Validate count/window bounds; Normal/silent sanctions with temporary forms=>Silent automated gate applies; Default exceeded-only deletion and clearflood whole observed sequence=>Distinct exact ID sets, no unobserved history; Consecutive after-N versus timer more-than-N ambiguous=>Record independent threshold decisions; Imported message-ID sorted-set member avoids same-timestamp collisions=>Two messages at same mocked timestamp count separately; Redelivery/edits must not inflate counts (proposed hardening)=>Same delivery counted once, changed edit reevaluates content'),
+'S28': (7, 'raidtime raidactiontime antiraid autoantiraid', 'Active joins temporary banned with default6h activation/default1h ban=>Independent deadlines and bounded ban; Antiraid status/button/on/custom duration/off=>Off immediately stops new enforcement; Auto threshold more-than-N joins in under1minute=>N versus N+1 and exact60s boundary; Approval/admin/federation exemptions open=>No implicit exemption inferred'),
+'S29': (9, '', 'Federation owner/admin domain and opt-in groups=>Fed authority distinct from Telegram group administration; Own bot namespace, no Rose private network/global bans=>Foreign bot/fed IDs cannot grant authority; Keep existing optional CAS separate=>CAS setting never substitutes for federation trust'),
+'S30': (9, 'fedinfo fedadmins chatfed myfeds', 'Current/owned/explicit fed ID context=>Group and PM resolve intended federation; Myfeds lists admin memberships with distinct IDs=>No chat-ID conflation and no foreign namespace leak'),
+'S31': (9, 'newfed delfed renamefed', 'PM-only create/delete with one owned federation per user=>Group form rejected and concurrent second creation denied; Names64-character truncation and returned ID=>Boundary and multicodepoint tests; Irreversible deletion removes fed data while Telegram bans persist=>No mass unban during deletion; Rename separate from unsupported transfer=>No transfer/title requirement inferred'),
+'S32': (10, 'fedpromote feddemote feddemoteme fedreason fednotif setfedlog unsetfedlog fbanlist importfbans subfed unsubfed fedsubs', 'Owner promote/demote and self-demote explicit ID=>Local group admin cannot grant fed role; Required reason toggle=>Missing required reason rejected; Owner PM notifications defaulton independent from logs=>Turning off PM notification keeps log delivery; Channel fed-ID setup requires owner confirmation=>Wrong owner/forged destination denied; Banlist csv/minicsv/json and once30minutes limit=>Each format and 29m59s/30m boundary; Reply imports CSV id/reason or JSONL/NDJSON user_id optionalname/username/reason=>Multiple newline objects parsed, malformed batch bounded; Directed subscriptions apply to linked groups=>Direction/source provenance preserved and cycles policy explicit'),
+'S33': (9, 'joinfed leavefed quietfed', 'Group creator alone joins/leaves without fed ownership=>Creator can join another owner fed, ordinary admin cannot; Quietfed suppresses explanation while enforcing=>Same ban with and without visible output'),
+'S34': (10, 'fban unfban', 'Group command authority is federation role, not Telegram admin=>Fed admin member allowed, local admin without fed role denied; PM targets owned federation even when connected=>Connection cannot redirect fed ban; Active enforce observed users silently across linked groups=>No per-group visible/log fanout notification; Passive join/speak checks direct/subscribed bans explain source unless quiet=>Source reason retained; Minimal observed membership, no unavailable history enumeration=>Only known presence selected and bounded jobs proposed'),
+'S35': (10, 'fedstat fbanstat', 'All-user own/reply/target/target+fedID ban query=>Return reason/date in intended namespace; Fbanstat ID own-query alias context=>No target ambiguity or tenant leak'),
+'S36': (3, 'filter stop stopall filters', 'Words/quoted phrases/parenthesized multiple/media optionaltext=>Each trigger and payload round-trips; Stopall creator-only=>Ordinary admin denied; Default reply/fill trigger sender and replytag selects replied user=>Different users produce intended fillings; Prefix and exact matcher=>Start versus whole-message behavior distinct; User/admin/allow_bot modifiers and defaultignorebots=>Each role branch and opt-in tested; Clone command optionaldescription publishes slash suggestion=>Validate spelling and documented fewer-than32 against Telegram limit'),
+'S37': (3, 'save get notes clear privatenotes', 'Save replaces text/replied attachment with quoted name=>Same name replaces correct bot/chat record; Hashtag and get open note=>Explicit retrieval forms resolve same content; Notes public by default unless admin modifier=>Member reads public but not admin note; Privatenotes PM button with private/noprivate overrides=>Per-note group override wins; Fill replied user otherwise opener=>No accidental sender substitution; Clone repeated time versus repeat time spelling conflict=>Proposed alias pair tested only after decision; Repeated notes actual durable delivery (clone contract)=>Restart/retry preserves bounded schedule, not selector stub'),
+'S38': (3, '', 'Existing HTML stored/rendered as legacy HTML=>No Markdown reinterpretation or destructive data migration; Ordinary/expandable quotations separate=>Correct Telegram entities for both; URL buttons, same-row and #note menu targets=>Correct target kind and rows; Username filling fallback=>Absent username still gives safe rendered text; Control modifiers removed from visible content=>Flags sent to Telegram and text safe; Random alternatives use %%%=>Select valid alternative without exposing delimiter; Protect Telegram flag is not capture guarantee=>Truthful user-facing help'),
+'S39': (3, '', 'Equivalent button-markup helper label/link/row layout=>Editor builds working URL/note buttons with no copied site assets'),
+'S40': (8, 'connect disconnect connection reconnect', 'Any chat member connects with precise rights required to mutate=>Member can read connection but settings denied; PM connect ID/@group and group personal button=>Correct chat selected without exposing another user session; One active group replaces previous=>Switch atomically updates selected target; PM connect noargs lastfive and reconnect switching=>Sixth distinct connection evicts oldest history entry; Context id and disconnect=>ID matches active chat and disconnect clears active context; History never authorizes, revalidate membership/rights=>Removed member and demoted admin denied on reuse'),
+'S41': (8, 'echo say broadcast', 'Echo/say formatted resend aliases=>Both produce same payload semantics; Broadcast belongs to bot owner groups=>Arbitrary group admin cannot send to all shared-bot groups; Standalone operator/factory owner destination isolation=>Child owner cannot address sibling/standalone destinations; Rate-limited bounded fanout=>Backpressure and failure outcomes explicit'),
+'S42': (11, 'export import reset', 'Admin export JSON with optionalmodule selection=>Selected modules only, omit secrets; Creator reply import all/selected=>No cross-bot/chat data overwrite; Creator reset requires confirmation=>Wrong user/chat/expired confirmation denied; Rate-limited operations exact interval unspecified=>Require policy rather than invented limit; Full Rose schema unknown and ownformat roundtrip required=>Reject claimed Rose compatibility without verified format'),
+'S43': (11, 'privacy', 'PM-only policy/access/deletion of personal data=>Group call directs private and wrong user cannot access record; Fields and retention periods unspecified policy=>No automatic7/30/90-day purge or blanket deletion assumption'),
+'S44': (8, 'setactiontopic actiontopic newtopic renametopic closetopic reopentopic deletetopic', 'Settings shared across forum topics=>One topic change visible in another; Welcomes general/default actiontopic then currenttopic selection=>Deleted/missing/general topic handled explicitly; Topic management requires manage_topics=>Unrelated admin right denied; Delete topic removes topic/messages=>Explicit destructive confirmation proposal; Closed topic still permits Telegram admins posting=>No incorrect no-post guarantee'),
+'S45': (8, 'cleancommand keepcommand cleancommandtypes', 'Command cleaning runs after authorized handling for any sender=>Execution occurs before deletion; Other includes unknown/otherbot commands=>No conflation with disable or lock; Source example join/leave/pin conflicts with table=>Use all/admin/user/other canonical proposal with tests'),
+'S46': (8, 'cleanmsg keepmsg cleanmsgtypes', 'Configured bot message categories removed after5minutes=>Only selected action/filter/note IDs deleted; Timed botclean separate from silence and serviceclean=>No immediate deletion or wrong message class'),
+'S47': (8, 'cleanservice nocleanservice cleanservicetypes', 'Boolean/all or selected service categories=>Only selected service messages deleted; Other payment/proximity/webapp/autodelete still processed=>Payment handler runs before cleanup; Telegram may omit join/leave in large groups=>No false claim cleanup executed; Undeletable service/age API limits=>Failure produces truthful outcome'),
+'S48': (0, '', 'Advanced navigation only=>Cover S49/S50 without duplicate commands'),
+'S49': (8, 'silentactions', 'Automated silent enable is creator-only with logchannel=>Nonowner or missing log destination denied; Enable does not convert existing settings=>Each automatic silent action explicitly selected; Disable or log removal makes configured silent actions loud=>Next automatic event emits visible feedback; Temporary silent actions retain durations=>Invalid duration cannot become permanent; Manual silent commands separate and ungated by this setting=>Manual contract follows S14 only'),
+'S50': (8, 'bot2bot bot2botskipreview', 'Modes off(default)/admin/all retain actual command rights=>Nonadmin bot never gains admin rights; Bot-admin mutations need human review by default=>Denied without attributable authorized reviewer; Skipreview bypass still checks bot rights=>Missing Telegram right still denied; Filter allow_bot optin and deploymentBotFather requirement=>Defaultignore and optin/deployment prerequisites distinct; Selftrigger loops and replayed reviews defended (hardening)=>Bot output cannot cause unbounded execution or reuse approved review; Bot sender never implies owner=>Owner-only command denied'),
+'T01': (1, '', 'Installed SDK reaction deletion methods and return_bots exist=>Introspect SDK independently from deployment support; Reaction removals require delete right=>Deny missing caller/bot capability; Reaction subscriptions/admin eligibility explicit=>Runtime allowed_updates includes required types when implemented; Guest/bot messages and reaction permission supported in schema=>Classify without inferred human owner; Nonadmin getChatMember guarantees restricted=>Failure cannot authorize; Bulk deletion max100 with no per-ID success count=>Report submitted/acknowledged only; Restriction veryshort/long can become permanent=>Reject unsafe deadlines; Joinrequest short user_chat_id contactwindow=>Deadline expiry fails safely; Deployed API version unobserved=>Keep deployment validation open, no mutabletag version claim')
+}
+source_status = {'S02':'partial','S03':'partial','S04':'partial','S05':'partial','S07':'partial','S08':'partial','S09':'partial','S10':'partial','S12':'partial','S13':'partial','S14':'partial','S15':'partial','S16':'partial','S18':'partial','S19':'partial','S22':'partial','S23':'partial','S24':'partial','S25':'partial','S26':'partial','S27':'partial','S36':'partial','S37':'partial','S38':'partial','S40':'partial','S41':'partial','S47':'partial','T01':'SDK inspected; deployment unverified'}
+source_paths = {'S04':'bots/groupguard/perms.py','S05':'bots/groupguard/handlers/moderation.py','S07':'bots/groupguard/locales; core/i18n.py','S08':'bots/groupguard/handlers/content.py','S09':'bots/groupguard/perms.py','S10':'bots/groupguard/handlers/moderation.py','S12':'bots/groupguard/handlers/moderation.py','S13':'bots/groupguard/handlers/moderation.py; bots/groupguard/actions.py','S14':'bots/groupguard/actions.py; bots/groupguard/handlers/moderation.py','S15':'bots/groupguard/handlers/moderation.py; bots/groupguard/service.py','S16':'bots/groupguard/handlers/moderation.py','S18':'bots/groupguard/handlers/welcome.py','S19':'bots/groupguard/handlers/welcome.py','S22':'bots/groupguard/protect.py','S23':'bots/groupguard/handlers/welcome.py; bots/groupguard/jobs.py','S24':'bots/groupguard/handlers/content.py','S25':'bots/groupguard/chatconfig.py','S26':'bots/groupguard/protect.py','S27':'bots/groupguard/protect.py','S36':'bots/groupguard/handlers/content.py','S37':'bots/groupguard/handlers/content.py','S38':'bots/groupguard/service.py; bots/groupguard/handlers/content.py','S40':'bots/groupguard/handlers/panel.py','S41':'core/services/broadcast.py','S47':'bots/groupguard/handlers/welcome.py','T01':'installed aiogram3.31.0; core/runtime/dispatcher.py'}
+public = set('id info rules adminlist approval approved warnings warns report disabled disableable locktypes locks flood fedinfo fedadmins chatfed myfeds fedstat fbanstat filters notes get connection actiontopic logchannel logcategories cleancommandtypes cleanmsgtypes cleanservicetypes'.split())
+owner = set('unapproveall rmallowlistall rmblocklistall stopall import reset joinfed leavefed silentactions'.split())
+restr = set('ban tban dban sban unban mute tmute dmute smute unmute kick dkick skick warn dwarn swarn rmwarn resetwarn'.split())
+delete = set('del purge spurge purgefrom purgeto cleanlinked'.split())
+pin = set('pin permapin unpin unpinall antichannelpin'.split())
+topics=set('newtopic renametopic closetopic reopentopic deletetopic'.split())
+aliases={'say':'echo','warntime':'setwarntime','fbanstat':'fedstat'}
+for s,(phase,commands,behaviors) in contracts.items():
+    refs = 'S06,S40' if s in ('S06','S40') else s
+    if s=='S06':
+        add('S06-PAGE',refs,'non-functional coverage','Introduction to /connect',behaviors.split('=>')[0],behaviors.split('=>')[1],0,status='not applicable',canonical='S40-B01')
+        continue
+    for n, piece in enumerate(behaviors.split('; '),1):
+        behavior, acceptance = piece.split('=>')
+        nonfunc = s in ('S01','S03','S21','S48')
+        spec='unresolved edge' if any(x in behavior.lower() for x in ('unspecified','ambiguous','unresolved','unknown','unobserved','conflicts','typo','spelling conflict')) else 'specified'
+        if '(proposed hardening)' in behavior or '(hardening)' in behavior: spec='proposed safety hardening'
+        add(f'{s}-B{n:02}',refs,'non-functional coverage' if nonfunc else 'behavior/default/permission',behavior,behavior,acceptance,phase,
+            status='not applicable' if nonfunc else source_status.get(s,'not implemented'), spec=spec,path=source_paths.get(s,'No implementation found in refreshed GroupGuard'),
+            question=behavior if spec=='unresolved edge' else '')
+    for cmd in commands.split():
+        id = 'GG-CMD-'+cmd if 'GG-CMD-'+cmd in byid else s+'-C-'+cmd
+        canon=s+'-family-'+aliases.get(cmd,cmd)
+        if cmd in public: permission='Public/member read; no mutation authority implied'
+        elif cmd in owner: permission='Attributable group creator'
+        elif cmd in restr: permission='restrict_members'
+        elif cmd in delete: permission='delete_messages'
+        elif cmd in pin: permission='pin_messages'+(' + delete_messages for linked deletion' if cmd=='cleanlinked' else '')
+        elif cmd in topics: permission='manage_topics'
+        elif cmd in ('promote','demote'): permission='promote_members'
+        elif cmd=='broadcast': permission='Bot owner; namespace-scoped destinations'
+        elif s in ('S31','S32'): permission='Federation owner, except feddemoteme self-removal and fedsubs read; exact source context'
+        elif s=='S34': permission='Federation role in group; owned federation in PM'
+        elif cmd=='privacy': permission='Own data, PM only'
+        else: permission='change_info for settings; reads/membership forms as source specifies'
+        syntax='/'+cmd
+        body=sources[s][2]
+        r=dict(id=id,module=sources[s][0],source_refs=refs,source_url_or_path=';'.join(sources[x][1] for x in refs.split(',')),source_section=refs,
+               retrieval_or_inspection_date='2026-10-12 Asia/Jakarta',provenance='reviewer-supplied digest + repository comparison',
+               rose_source_status='condensed supplied specification',specification_status='unresolved alias' if cmd=='warntime' else 'specified',
+               implementation_status='partial' if id.startswith('GG-CMD') else 'not implemented',canonical_behavior_id=canon,row_kind='command spelling',
+               command_event_syntax=syntax,semantics_defaults=re.sub(r'\[Source\]\([^)]*\)\. ?', '', body),caller_permissions=permission,
+               bot_permissions='Matching Telegram right for action; missing capability must deny',chat_types='Source group/PM/connected context',standalone='acceptance required',factory_child='separate namespace acceptance required',
+               existing_path_evidence=source_paths.get(s,'No GroupGuard implementation found'),test_evidence='Related tests are subset evidence; no complete parity verification',gap_status='partial' if id.startswith('GG-CMD') else 'not implemented',phase=str(phase),
+               dependencies='Applicable 1A/1B/1C seam',acceptance_scenario=f'Execute {syntax} using each {s} documented form; assert the listed contract; deny wrong actor/right/chat/bot and inspect API failures',deviations_open_questions='Alias mapping does not count as a separate completed feature')
+        if id in byid: byid[id].update(r)
+        else: rows.append(r); byid[id]=r
+
+# A spelling is traceable, but aliases refer to the same canonical family.
+for alias,base in {'unwarn':'rmwarn','resetwarns':'resetwarn','admin':'report','admins':'report','addblock':'addblocklist','rmblock':'rmblocklist','unblocklist':'rmblocklist'}.items():
+    r=byid['GG-CMD-'+alias]
+    target=next(x for x in rows if x['command_event_syntax']=='/'+base)
+    r['canonical_behavior_id']=target['canonical_behavior_id']
+    r['source_refs']=target['source_refs']; r['source_url_or_path']=target['source_url_or_path']
+    r['specification_status']='legacy alias extension'; r['row_kind']='alias spelling'; r['provenance']='direct repository inspection + reviewer-supplied comparison'
+
+rosters = [
+('S04','BOOL', 'on yes true off no false','Boolean synonym','Parse to the stated boolean without changing unrelated fields',1),
+('S04','DURATION','m h d w s','Duration suffix (s retained extension)','Valid bounded value parses; invalid/boundary rejects without permanent fallback',1),
+('S07','LANG','AR AZ BE BG CKB DE EN-GB EN-PT ES ES-AR FA FIL FR HE ID IT ML-IN MS NL PL PT PT-BR RU SH TA TR UK UZ VI ZH-CN ZH-TW','Published locale','Select exact code; independently audit required translations, no fallback-only parity',11),
+('S13','LOG','settings admin user automated reports other','Log category, source default enabled','Toggle this category independently and verify permitted matching event reaches log',2),
+('S15','MODE','kick ban mute tban tmute','Warning threshold action','Correct API/deadline; failed sanction retains warning state',2),
+('S17','DISABLE','adminlist antiflood approval connect fedadmins fedinfo fedsubs filters flood id info kickme locks locktypes notes rules runs saved warnings warns','Disableable catalog name','Catalog includes exact token; disabling suppresses its defined execution or remains explicit open meaning',8),
+('S22','LOCK','all album anonchannel audio bot button cashtag checklist cjk command comment contact cyrillic document email emoji emojicustom emojigame emojionly externalreply forward forwarduser forwardbot forwardchannel forwardstory game gif guestbot inline invitelink botlink location outsidereaction phone photo poll reaction rtl spoiler sticker stickeranimated stickerpremium text url video videonote voice zalgo','Typed lock','Positive matching event locks; negative neighboring type unaffected; admin exempt; allowlist and precise rights honored',5),
+('S22','ALLOW','url-domain url-subdomain url-path button-domain button-subdomain button-path invite-exact invite-chat invite-username inline-bot sender-channel command stickerpack emojipack forwarded-identity','Typed allowlist','Exact allowed scope exempt, neighboring domain/path/identity not accidentally exempt; owner-only all-clear',5),
+('S22','MODE','kick ban tban mute tmute','Per-lock action','This lock chooses configured reason/action with strict temporary duration',5),
+('S23','CAPTCHA','button text math text2','Captcha mode','Current immutable challenge accepts intended solution; wrong/old/user/chat/bot solution fails',4),
+('S25','MODE','nothing warn kick ban tban mute tmute','Default blocklist mode','Nothing still deletes; delete toggle independent; temporary values validated',6),
+('S26','TYPE','stickerpack file forward inline prefix exact lookalike name username','Typed blocklist prefix','Positive trigger and close negative tested; identity/origin/text namespaces kept separate',6),
+('S26','WILDCARD','question star doublestar escape','Pattern token','?=one nonspace; *=zero/more nonspace; **=anychars; backslash literal; test each token independently',6),
+('S27','MODE','kick ban tban mute tmute skick sban smute','Flood action form','Correct sanction/deadline; automated silent owner/log gate and loud fallback respected',7),
+('S32','EXPORT','csv minicsv json','Federation banlist format','Serialize actual fields; once30min limit applies',10),
+('S32','IMPORT','CSV JSONL NDJSON','Federation ban import format','CSV id/reason or newline user_id objects; optional name/username/reason and malformed records bounded',10),
+('S36','MOD','replytag user admin allow_bot command','Filter modifier','Assert specified role/filling/publishing effect and default behavior when absent',3),
+('S36','MATCH','prefix exact','Filter match mode','Prefix matches start only; exact entire message only',3),
+('S37','MOD','admin private noprivate repeat repeated','Note modifier','Assert read/delivery effect; repeat/repeated proposed alias pair remains unresolved pending decision',3),
+('S38','STYLE','code italic bold strike underline spoiler quote expandable-quote hyperlink','Formatting style','Correct Telegram entities and escaped Unicode render; legacy HTML preserved',3),
+('S38','FILL','first last fullname username mention id chatname rules','Shared filling','Use intended event user/chat; missing fields fallback safely; rules yields correct button',3),
+('S38','CONTROL','preview nonotif protect mediaspoiler','Content control','Telegram flag changes and token not displayed as literal text',3),
+('S38','BUTTON','buttonurl same note','Button syntax','URL destination, same row, #note menu target independently rendered',3),
+('S45','CLEAN','all admin user other','Command-clean category','Authorized command executes before delete; unknown/otherbot matches other',8),
+('S46','CLEAN','all action filter note','Bot-message-clean category','Only category messages deleted after5min, timer survives restart when implemented',8),
+('S47','CLEAN','join leave other photo pin title videochat','Service-clean category','Only category deleted; payment/function processing still runs and API limits honored',8),
+('S49','SILENT','sban skick smute swarn','Automated silent action','Creator enables with log; explicit selection; missing log/disabled becomes loud; temporary durations retained',8),
+('S50','BOTMODE','off admin all','Bot-to-bot mode','Off default; admin/all still require precise rights and human review for mutations by default',8),
+('S09','RIGHT','change_info delete_messages restrict_members pin_messages promote_members manage_topics creator','Permission mapping','Correct caller and bot capability; unrelated admin right denied; creator always attributable',1),
+]
+for s,prefix,tokens,description,acceptance,phase in rosters:
+    for token in tokens.split():
+        status=source_status.get(s,'not implemented')
+        spec='specified'
+        if prefix=='LANG': status='existing-unverified' if token=='AR' else 'not implemented'; spec='published locale, translation unverified'
+        if prefix=='LOCK': status='partial' if token in ('url','invitelink','forward','sticker','gif','voice','poll','photo','video','document','audio','videonote','bot') else 'not implemented'
+        if prefix=='ALLOW': status='not implemented'
+        if prefix=='TYPE': status='not implemented'
+        if prefix=='WILDCARD': status='not implemented'
+        if prefix=='CAPTCHA': status='partial' if token in ('button','math') else 'not implemented'
+        if prefix=='MOD': status='not implemented'
+        if prefix in ('CONTROL','BUTTON','STYLE'): status='not implemented'
+        if prefix=='CLEAN': status='partial' if s=='S47' and token in ('join','leave') else 'not implemented'
+        if prefix=='DISABLE' and token in ('runs','saved','antiflood','kickme'): spec='catalog specified; execution undefined'; status='open meaning'
+        if prefix=='MOD' and token in ('repeat','repeated'): spec='unresolved alias'; status='not implemented'
+        if prefix=='DURATION' and token=='s': spec='legacy extension; timer seconds sourced at S27'
+        add(f'{s}-{prefix}-{token}',s,'typed roster',token,description+': '+token,acceptance,phase,status=status,spec=spec,path=source_paths.get(s,'No GroupGuard implementation found'))
+
+# Additional documented spellings and variants each have an acceptance row.
+variants=[
+('S05','id-self-reply-username','/id self/current group/reply/@known','Identity resolution','Each form returns correct ID without arbitrary username inference',2),
+('S05','info-target','/info self/reply/@known/ID','Info target forms','Return available fields for exact target',2),
+('S07','setlang-code','/setlang CODE','Direct selection','Select group language; invalid code errors',11),
+('S10','pin-loud','/pin loud','Loud pin','disable_notification=False',2),
+('S12','purge-N','/purge N (reply)','Count variant','N messages start at reply and respect cap',2),
+('S22','locks-list','/locks list','List variant','Configured types distinct from locktypes',5),
+('S22','lock-reason','/lock TYPE ### reason','Per-lock reason','Only selected lock reason updated',5),
+('S22','lock-action','/lock TYPE {mode}','Per-lock action','Select exact action with duration when temporary',5),
+('S22','stickerpack-shortcut','stickerpack:<> (reply)','Pack shortcut','Extract only replied sticker pack',5),
+('S22','emojipack-shortcut','emojipack:<> (reply)','Pack shortcut','Extract exact custom emoji pack',5),
+('S23','kicktime','/captchakicktime TIME','Bounds5m..1day/default5m','Reject outside bounds without rewriting issued challenges',4),
+('S23','mutetime-off','/captchamutetime off','Disable auto-release','No scheduled release for new challenge; existing issued state independent',4),
+('S24','blocklist-list-add','/blocklist [trigger]','Noargs lists; args adds','Explicit grammar and alias tests',6),
+('S24','multi-trigger','/addblocklist (a,b) reason','Multiple triggers','Quoted/parenthesized terms preserve boundaries and shared reason',6),
+('S26','entry-action','{action}','Per-entry override','Silent only with S49 and non-silent default mode',6),
+('S26','reason-reset','/resetblocklistreason','Fallback reset','Per-entry reasons remain unchanged',6),
+('S27','clearflood-on-off','/clearflood on|off','Whole-sequence versus exceeded-only','Exact deletion IDs for each branch',7),
+('S28','antiraid-variants','/antiraid status|on|TIME|off','Status/activation variants','Configured6h versus override, immediate off',7),
+('S28','autoantiraid-off','/autoantiraid off|no','Disable synonyms','No automatic activation',7),
+('S35','fedstat-target-fed','/fedstat TARGET FED_ID','Target/context variant','No ID conflation, reason/date intended bot namespace',10),
+('S36','filter-multimedia','/filter word|"phrase"|(a,b) [replied media]','Trigger/payload variants','Exact trigger parsing and media payload roundtrip',3),
+('S37','hash-note','#note','Hashtag retrieval','Same content as get, same auth',3),
+('S37','quoted-name','/save "note name" ...','Quoted name','Replace/retrieve exact stored name',3),
+('S37','repeat-duration','{repeat TIME}|{repeated TIME}','Source spelling inconsistency','Proposed aliases, decision and durable schedule tests before implementation',3),
+('S38','random','%%%','Random alternatives','Delimiter not visible and one valid alternative selected',3),
+('S40','connect-id-group','/connect ID|@group (PM)','PM connection','Member validated and active chat replaced',8),
+('S40','connect-lastfive','/connect (PM noargs)','Last five history','Sixth chat evicts oldest; history not authorization',8),
+('S42','select-modules','/export MODULES; /import MODULES','Selective portability','Only selected known modules roundtrip',11),
+('S45','table-typo','join/leave/pin example','Conflicts with all/admin/user/other table','Canonical table proposed; typo recorded',8),
+('S47','boolean-service','/cleanservice BOOL|all|TYPES','Boolean/category forms','Map intended categories without payment bypass',8),
+]
+for s,id,syntax,behavior,acceptance,phase in variants:
+    add(f'{s}-V-{id}', 'S06,S40' if s=='S40' else s,'syntax variant',syntax,behavior,acceptance,phase,
+        status=source_status.get(s,'not implemented'),spec='unresolved source defect' if 'inconsisten' in behavior or 'Conflicts' in behavior else 'specified',path=source_paths.get(s,'No GroupGuard implementation found'))
+for s,word in [('S18','welcome'),('S19','goodbye')]:
+    for token in ('show','on','yes','true','off','no','false','noformat'):
+        add(f'{s}-V-{word}-{token}',s,'syntax variant','/'+word+' '+('' if token=='show' else token),f'{word} {token} form',f'Assert {token} affects only intended enable/content/inspection behavior',3,status='partial',path=source_paths[s])
+
+for id,refs,syntax,behavior,case,phase in [
+('Q01','S17','runs/saved/antiflood/kickme','Execution meanings absent despite known disable catalog','Do not create invented handlers; refine exact meanings',8),
+('Q02','S15,S27','threshold N','Warn/consecutive/window thresholds unresolved','Decision requires exact-limit/above-limit boundary cases',2),
+('Q03','S11,S28,S34','exemption precedence','Approval versus fed/raid/newcomer policy unresolved','Obtain owning-phase policy before exemption logic',1),
+('Q04','S15,S26,S37,S45','source grammar defects','warntime/repeat/lookalike/username/cleancommand conflicts','Proposed alias/canonical grammar needs explicit tests and decision',3),
+('Q05','S42','Rose schema/rate-limit','Full foreign schema and import/reset interval unknown','Own-format roundtrip only until verified format',11),
+('Q06','S43','privacy fields/retention','No approved retention or exact field deletion policy','No destructive purge inferred',11),
+('Q07','S07','runtime help additions','Published31 locales known; newer runtime additions unknown','Do not claim unseen roster complete',11),
+('Q08','T01','deployed server/live parity','Actual server version/full archive/live Rose unobserved','SDK/digest evidence cannot certify deployment/live parity',12),
+('Q09','S09,S31','title/transfer/global bans/crossbot sharing','No mandatory sourced scope','Retire overbroad planning assumptions; no added feature scope',9),
+('Q10','S38,S36','command length and grammar','Clone fewer-than32 versus Telegram limits needs decision','Check actual command schema before publishing commands',3),
+]:
+    add(id,refs,'concrete open question',syntax,behavior,case,phase,status='open question',spec='unresolved',question=behavior)
+
+# Missing independent behaviors are not promoted from a partial module status.
+missing_behaviors={'S08':[3], 'S09':[2,3,4,5,6,7,8], 'S10':[2,4,5], 'S12':[3,5,6], 'S13':[1,4,5], 'S14':[3], 'S15':[5,8], 'S16':[1], 'S18':[1], 'S19':[1,2], 'S22':[1,4,5,6,7,8], 'S23':[4,5,7,9,10,11], 'S24':[2,4], 'S25':[1,2,3], 'S26':[2,3,4,5,6], 'S27':[1,3,4], 'S36':[2,4,5,6], 'S37':[4,6,7], 'S38':[2,3,5,6,7], 'S40':[1,2,3,4,5,6], 'S41':[1,2,3,4]}
+for ref,nums in missing_behaviors.items():
+    for n in nums:
+        id=f'{ref}-B{n:02}'
+        if id in byid: byid[id]['implementation_status']=byid[id]['gap_status']='not implemented'
+missing_variants=['S05-V-info-target','S07-V-setlang-code','S12-V-purge-N','S22-V-locks-list','S22-V-lock-reason','S22-V-lock-action','S22-V-stickerpack-shortcut','S22-V-emojipack-shortcut','S23-V-kicktime','S23-V-mutetime-off','S26-V-entry-action','S26-V-reason-reset','S27-V-clearflood-on-off','S37-V-quoted-name','S37-V-repeat-duration','S38-V-random']
+for id in missing_variants: byid[id]['implementation_status']=byid[id]['gap_status']='not implemented'
+for ref,prefix,tokens in [('S38','FILL','last fullname chatname rules'),('S09','RIGHT','promote_members manage_topics'),('S13','LOG','settings admin user automated reports other'),('S15','MODE','tban tmute'),('S22','MODE','kick ban tban mute tmute'),('S25','MODE','nothing warn kick ban tban mute tmute'),('S27','MODE','tban tmute skick sban smute')]:
+    for token in tokens.split(): byid[f'{ref}-{prefix}-{token}']['implementation_status']=byid[f'{ref}-{prefix}-{token}']['gap_status']='not implemented'
+for id in ('S40-V-connect-id-group','S40-V-connect-lastfive','S47-V-boolean-service'):
+    byid[id]['implementation_status']=byid[id]['gap_status']='not implemented'
+for id in ('S05-B02','S07-B01'):
+    byid[id]['implementation_status']=byid[id]['gap_status']='not implemented'
+for r in rows:
+    if r['id'].startswith(('S18-V-welcome-','S19-V-goodbye-')):
+        r['implementation_status']=r['gap_status']='not implemented'
+
+# Historical source gates are now precise; evidence is supplied rather than fetched.
+for id,refs,behavior,status in [('SRC-rose','S01','All50 navigation pages represented by dated reviewer digest; full archive/live behavior unobserved','digest inventoried'),('SRC-api','T01','Reviewer capability notes plus installed SDK introspection; deployed server unobserved','SDK inspected; deployment unverified'),('SRC-reference','', 'Verified bundle; source tree exactly reference after cherry-picks','baseline verified')]:
+    r=byid[id]; r['semantics_defaults']=behavior; r['implementation_status']=r['gap_status']=status;r['specification_status']='source provenance';r['source_refs']=refs
+    r['rose_source_status']='reviewer-supplied digest' if refs else 'verified Git bundle'
+    r['provenance']='reviewer-supplied digest + direct inspection' if refs else 'direct Git verification'
+    r['deviations_open_questions']='Full archive/live deployment remains unobserved' if refs else 'No source-tree differences'
+    if refs:r['source_url_or_path']=sources[refs][1]
+
+# Reconcile foundation IDs with evidence and actual owning subphase.
+foundation_refs={'anonymous':'S09','edited':'S22,T01','core-precedence':'S04,S16','reaction-subscription':'S22,T01','config-race':'S04','warnings-race':'S15','admin-cache':'S09','target-resolution':'S05,S14','durations':'S04,S14,T01','webhook-durability':'T01'}
+for suffix,refs in foundation_refs.items():
+    r=byid['GG-FOUND-'+suffix];r['source_refs']=refs;r['provenance']='direct code/probe + reviewer-supplied comparison'
+    r['source_url_or_path']=';'.join(sources[x][1] for x in refs.split(','))
+    r['specification_status']='proposed safety hardening' if suffix in ('config-race','warnings-race','webhook-durability') else 'specified'
+    r['phase']='1A' if suffix in ('anonymous','admin-cache','target-resolution','durations') else ('1C' if suffix in ('config-race','warnings-race','webhook-durability') else '1B')
+for id in ('GG-EVT-cas','GG-EVT-ai-spam'):
+    byid[id]['implementation_status']=byid[id]['gap_status']='existing-unverified external service'
+    byid[id]['deviations_open_questions']='Optional actual service behavior unverified; this is not a blocked documentation dependency.'
+byid['GG-EVT-flood']['semantics_defaults']+=' Imported baseline uses message-ID sorted-set members, preventing equal-timestamp collisions; replay after reset remains unresolved.'
+
+# Decompose all51 planning areas explicitly. Unsupported suffixes are retired to Q09.
+area_refs = [
+('admin-listing','S09'),('promote-demote-title','S09,Q09'),('approvals','S11'),('warning-modes-and-expiry','S15'),('report-settings','S16'),('pin-management','S10'),('purge-variants','S12'),('moderation-aliases','S14,S15'),('logging-types','S13'),
+('shared-formatting-entities','S38'),('button-layout-menus','S38,S39'),('rules-modes','S08'),('note-modes','S37'),('filter-modes','S36'),('greeting-media-and-goodbye','S18,S19,S20'),('recurring-notes','S37,Q04'),
+('captcha-mode-roster','S23'),('newcomer-persistence-and-joinrequests','S23'),('full-lock-roster','S22'),('lock-actions','S22'),('allowlists','S22'),('reaction-enforcement','S22,T01'),
+('advanced-blocklist-parser','S24,S26'),('blocklist-action-modes','S25,S26,S49'),('blocklist-exemptions','S11,S22,Q03'),('flood-modes','S27'),('raid-detection','S28'),('raid-policies','S28,Q03'),
+('connections','S40'),('disabling','S17,Q01'),('cleaning','S20,S45,S46,S47'),('topics','S44'),('echo-broadcast','S41'),('bot-to-bot-capability-review','S50,T01'),
+('federation-create-delete-transfer','S31,Q09'),('federation-roles','S29,S32'),('federation-chat-membership','S33'),('federation-discovery-and-notices','S30,S32'),('federation-bans-and-reasons','S34'),('federation-subscriptions','S32,S34'),('federation-enforcement-and-provenance','S34'),('federation-imports','S32'),
+('settings-import-export','S42'),('reset-authorization','S42'),('privacy-retention','S43,Q06'),('rose-language-roster','S07'),('complete-localized-ui','S07'),('clone-specific-annotations','S26,S36,S37,S50'),
+('cumulative-regression','Q08'),('independent-source-review','SRC-rose,Q08'),('live-release-checks','Q08')]
+mapping=[]
+for o in old:
+    if not o['id'].startswith('REQ-'):
+        mapping.append(dict(old_id=o['id'],new_ids=o['id'],disposition='retained; current source/status reconciled'))
+        continue
+    found=next(refs for area,refs in area_refs if o['id'].endswith('-'+area))
+    ids=[]
+    for ref in found.split(','):
+        if ref in byid: ids.append(ref)
+        else: ids.extend(r['id'] for r in rows if ref in r['source_refs'].split(',') and r['row_kind']!='legacy')
+    assert ids
+    mapping.append(dict(old_id=o['id'],new_ids=';'.join(dict.fromkeys(ids)),disposition='decomposed into specified rows; unsupported scope/unknowns explicit'))
+assert len(mapping)==201 and len([m for m in mapping if m['old_id'].startswith('REQ-')])==51
+
+fields=list(rows[0])
+with (ROOT/'FEATURE_MATRIX.csv').open('w',newline='') as f:
+    w=csv.DictWriter(f,fields);w.writeheader();w.writerows(rows)
+with (ROOT/'ID_MAP.csv').open('w',newline='') as f:
+    w=csv.DictWriter(f,['old_id','new_ids','disposition']);w.writeheader();w.writerows(mapping)
+def table(headers,records):
+    def cell(x):return str(x).replace('|','&#124;').replace('\n',' ')
+    return '| '+' | '.join(headers)+' |\n| '+' | '.join('---' for _ in headers)+' |\n'+''.join('| '+' | '.join(cell(x) for x in r)+' |\n' for r in records)
+stats={'total_rows':len(rows),'old_ids_retained':150,'planning_areas_decomposed':51,'implementation':dict(collections.Counter(r['implementation_status'] for r in rows)), 'specification':dict(collections.Counter(r['specification_status'] for r in rows)), 'phase':dict(collections.Counter(r['phase'] for r in rows)), 'row_kind':dict(collections.Counter(r['row_kind'] for r in rows)), 'canonical_behavior_ids':len({r['canonical_behavior_id'] for r in rows}), 'source_rows':{s:sum(s in r['source_refs'].split(',') for r in rows) for s in sources}}
+(ROOT/'LEDGER_COUNTS.json').write_text(json.dumps(stats,indent=2)+'\n')
+intro=f'# Phase 0B feature ledger\n\n{len(rows)} traceability rows; 150 prior IDs retained and 51 planning areas decomposed through ID_MAP.csv. Row count is not feature completion: spellings/variants/rosters may share canonical behavior IDs. Specification and implementation status are separate. No feature is certified Rose parity by this audit. All sourced requirements come from the reviewer-supplied condensed digest, dated 12 October 2026 Asia/Jakarta; cloud direct Rose retrieval remains zero. Legacy facts are retained independently.\n\n'
+(ROOT/'FEATURE_MATRIX.md').write_text(intro+table(['ID','Source','Kind','Syntax / behavior','Spec status','Implementation','Phase','Permission','Acceptance'],[(r['id'],r['source_refs'],r['row_kind'],r['command_event_syntax'],r['specification_status'],r['implementation_status'],r['phase'],r['caller_permissions'],r['acceptance_scenario']) for r in rows]))
+coverage='# Phase 0B source coverage\n\nEvidence: reviewer-supplied digest, reference date 2026-10-12 Asia/Jakarta. It is independently written condensed material from reviewer web tools, not our direct retrieval or a full page archive. S01–S50 cover all50 stated navigation pages; T01 is the additional official capability reference. Sources retain original URLs. Receiving specification does not verify implementation. S06/S40 map to one connection implementation.\n\n'
+coverage+=table(['Source','Page / original URL','Rows','Coverage'],[(s,sources[s][0]+' — '+sources[s][1],stats['source_rows'][s],'non-functional page plus requirements' if s in ('S01','S03','S06','S21','S48') else 'decomposed command/behavior/typed/default/permission rows') for s in sources])
+coverage+='\nConcrete unknowns Q01–Q10 remain in the matrix. Zero repeated blocked requests, live Rose tests or full page archival claims in Phase 0B.\n'
+(ROOT/'SOURCE_COVERAGE.md').write_text(coverage)
+(ROOT/'sources').mkdir(exist_ok=True)
+for name in ('OFFLINE_SOURCE_DIGEST.md','PLAN.md','REPORT_TEMPLATE.md','PHASE_00_REVIEW.md','MANIFEST.json'):
+    dest='ORIGINAL_'+name if name in ('PLAN.md','REPORT_TEMPLATE.md') else name
+    shutil.copyfile(HANDOFF/name,ROOT/'sources'/dest)
+shutil.copyfile(HANDOFF/'PLAN.md',ROOT/'PLAN.md')
+with (ROOT/'PLAN.md').open('a') as f:
+    f.write('\n\n## Phase 0B reconciliation — controlling bounded scope\n\nThe supplied original replaces the reconstructed current plan; reconstruction remains unchanged in history/PHASE_00. Existing audit evidence is retained. Later broad title/transfer/global/cross-bot and retention suggestions are not required sourced scope: Q09/Q06 track this. Phase 0B imports only the supplied baseline commits and audits; no implementation phase is authorized. Recommend 1A actor/precise fresh rights/strict temporary parsing/truthful results, 1B ordering/edits/sender/event subscriptions/child parity, 1C atomic transitions/deadlines/retryable jobs. ARCHITECTURE.md defines bounded proposed seams. Original roadmap phases2–12 remain owning phases, not authorization to begin. No new-group source defaults overwrite established live-group defaults.\n')
+shutil.copyfile(HANDOFF/'REPORT_TEMPLATE.md',ROOT/'REPORT_TEMPLATE.md')
+with (ROOT/'REPORT_TEMPLATE.md').open('a') as f:
+    f.write('\n\nPhase 0B extension: distinguish reviewer digest from direct retrieval, specification from implementation status, supplied baseline imports from agent changes, and full-suite failures from separately passing service suites. Preserve historical reports and record exact tree/provenance.\n')
+
+# Compact inventory is used verbatim in the self-contained inline report. IDs and
+# token rosters are exhaustive while full source prose remains in the CSV/digest.
+inventory=[]
+for s,(phase,commands,behavior) in contracts.items():
+    if s=='S06':
+        inventory.append('S06: S06-PAGE, introduction only; same S40 connection implementation, both references. Acceptance: one connection service. Phase8 for implementation; page Phase0; spec specified, implementation not applicable.')
+        continue
+    status='not applicable' if s in ('S01','S03','S21','S48') else source_status.get(s,'not implemented')
+    ids=[next(r['id'] for r in rows if r['command_event_syntax']=='/'+cmd and s in r['source_refs'].split(',')) for cmd in commands.split()]
+    commandline=('Commands '+', '.join('/'+c for c in commands.split())+'; spelling IDs '+', '.join(ids)+'. ') if commands else ''
+    behaviors=[]
+    for n,piece in enumerate(behavior.split('; '),1):
+        text,case=piece.split('=>');r=byid[f'{s}-B{n:02}'];behaviors.append(f"B{n:02} [{r['implementation_status']}; {r['specification_status']}] {text} → {case}")
+    rosterline=[]
+    for rs,prefix,tokens,description,case,rphase in rosters:
+        if rs==s:
+            grouped=collections.defaultdict(list)
+            for token in tokens.split(): grouped[byid[f'{s}-{prefix}-{token}']['implementation_status']].append(token)
+            status_text='; '.join(k+': '+','.join(v) for k,v in grouped.items())
+            rosterline.append(f'{s}-{prefix}-TOKEN IDs ({tokens}); {description}; phase{rphase}; implementation {{{status_text}}}; acceptance: {case}')
+    variantline=[f"{r['id']} [{r['implementation_status']}; {r['specification_status']}] `{r['command_event_syntax']}` → {r['acceptance_scenario']}" for r in rows if r['source_refs'].split(',')[-1]==s and r['row_kind']=='syntax variant']
+    inventory.append(f'**{s} {sources[s][0]} — phase{phase}; spec specified except explicit questions/defects; implementation {status}.** {sources[s][1]}\n\n'+commandline+'Behavior IDs '+s+'-Bnn: '+'; '.join(behaviors)+'.'+ ('\n\n'+'\n\n'.join(rosterline) if rosterline else '')+ ('\n\nVariants: '+'; '.join(variantline) if variantline else ''))
+(ROOT/'evidence/phase00b').mkdir(parents=True,exist_ok=True)
+(ROOT/'evidence/phase00b/compact-inventory.md').write_text('\n\n'.join(inventory)+'\n')
+print(json.dumps(stats,indent=2))

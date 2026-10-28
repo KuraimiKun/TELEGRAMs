@@ -1,0 +1,46 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+___ test_pg_identity_scoped_federation_status_and_anonymous_chat[standalone] ___
+tests/integration/test_groupguard_foundations.py:684: in test_pg_identity_scoped_federation_status_and_anonymous_chat
+    await test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat(env,api)
+tests/bots/groupguard/test_phase11.py:711: in test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat
+    'forward_origin':MessageOriginUser(date=pm('date',MEMBER).date,sender_user=tg_user(30))})
+                                            ^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'Update' object has no attribute 'date'
+----------------------------- Captured stdout call -----------------------------
+2026-10-13 17:02:15 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=123456 target=7d247789-d4ae-4b0e-b85f-653ba1b6e143
+____ test_pg_identity_scoped_federation_status_and_anonymous_chat[child-A] _____
+tests/integration/test_groupguard_foundations.py:684: in test_pg_identity_scoped_federation_status_and_anonymous_chat
+    await test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat(env,api)
+tests/bots/groupguard/test_phase11.py:711: in test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat
+    'forward_origin':MessageOriginUser(date=pm('date',MEMBER).date,sender_user=tg_user(30))})
+                                            ^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'Update' object has no attribute 'date'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 17:02:17 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 17:02:17 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-13 17:02:17 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=710011 target=a300dc8e-4056-40ac-9a07-77d20008561f
+____ test_pg_identity_scoped_federation_status_and_anonymous_chat[child-B] _____
+tests/integration/test_groupguard_foundations.py:684: in test_pg_identity_scoped_federation_status_and_anonymous_chat
+    await test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat(env,api)
+tests/bots/groupguard/test_phase11.py:711: in test_info_reports_scoped_federation_sources_and_anonymous_id_is_real_chat
+    'forward_origin':MessageOriginUser(date=pm('date',MEMBER).date,sender_user=tg_user(30))})
+                                            ^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.12/site-packages/pydantic/main.py:1042: in __getattr__
+    raise AttributeError(f'{type(self).__name__!r} object has no attribute {item!r}')
+E   AttributeError: 'Update' object has no attribute 'date'
+---------------------------- Captured stdout setup -----------------------------
+2026-10-13 17:02:18 [info     ] factory_child_loaded           bot_id=710011 template=groupguard
+2026-10-13 17:02:18 [info     ] factory_child_loaded           bot_id=710012 template=groupguard
+----------------------------- Captured stdout call -----------------------------
+2026-10-13 17:02:18 [info     ] admin_action                   action=gg_fed_delivery admin_id=10 bot_id=710012 target=8e32c281-b173-4ba0-8ed4-9bb2fcd74503
+=========================== short test summary info ============================
+FAILED tests/integration/test_groupguard_foundations.py::test_pg_identity_scoped_federation_status_and_anonymous_chat[standalone]
+FAILED tests/integration/test_groupguard_foundations.py::test_pg_identity_scoped_federation_status_and_anonymous_chat[child-A]
+FAILED tests/integration/test_groupguard_foundations.py::test_pg_identity_scoped_federation_status_and_anonymous_chat[child-B]
+3 failed, 111 deselected in 9.31s

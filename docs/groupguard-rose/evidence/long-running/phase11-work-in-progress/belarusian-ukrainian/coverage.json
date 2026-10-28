@@ -1,0 +1,12 @@
+{
+  "be": {
+    "module_messages": 471,
+    "platform_messages": 159,
+    "variables_match": true
+  },
+  "uk": {
+    "module_messages": 471,
+    "platform_messages": 159,
+    "variables_match": true
+  }
+}

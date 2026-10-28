@@ -1,0 +1,8 @@
+{
+  "preclosure_HEAD": "580e72d6a66906ab089f9d7a8ca0a80bd033586e",
+  "branch": "work",
+  "source_manifest": "worktree.sha256",
+  "baseline": "96357ef45c6492e03c626581ce2ee156d2da3816",
+  "pushed_initial_checkpoint": "580e72d6a66906ab089f9d7a8ca0a80bd033586e",
+  "scope": "actual modified worktree; final commit/archive identity recorded in final handoff"
+}

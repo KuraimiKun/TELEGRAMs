@@ -1,0 +1,15 @@
+{
+  "Python": "3.12.14",
+  "aiogram": "3.31.0",
+  "sqlalchemy": "2.1.4",
+  "asyncpg": "0.32.0",
+  "alembic": "1.20.0",
+  "redis": "7.4.1",
+  "fakeredis": "2.39.0",
+  "pytest": "9.1.1",
+  "pytest-asyncio": "1.4.0",
+  "ruff": "0.17.0",
+  "mypy": "2.4.0",
+  "PostgreSQL": "16.15",
+  "Redis_server": "7.4.11"
+}
