@@ -43,6 +43,7 @@ from core.routers.admin import (
 )
 from core.sdk.context import BotContext
 from core.sdk.features import Feature
+from core.sdk.module import DurableIngressError
 
 log = get_logger(__name__)
 
@@ -156,6 +157,9 @@ def _error_handler(ctx: BotContext):
     """Last-resort handler: log with context and tell the user something went wrong (private chats only)."""
 
     async def on_error(event: ErrorEvent, t: Translate | None = None) -> bool:
+        if isinstance(event.exception, DurableIngressError):
+            # The default error handler must not turn a failed inbox write into HTTP 200.
+            raise event.exception
         update = event.update
         log.error(
             "unhandled_update_error",

@@ -98,9 +98,9 @@ services:
       resources:
         limits: { memory: 640m }
 
-  # Local Bot API server: 2 GB uploads for every bot. Pin TELEGRAM_BOT_API_IMAGE to a tested tag in .env.
+  # Set an immutable tested image before deployment; readiness checks reject latest/mutable tags.
   telegram-bot-api:
-    image: ${TELEGRAM_BOT_API_IMAGE:-aiogram/telegram-bot-api:latest}
+    image: ${TELEGRAM_BOT_API_IMAGE:?set TELEGRAM_BOT_API_IMAGE to a tested image digest}
     restart: unless-stopped
     logging: *logging
     environment:
@@ -190,6 +190,20 @@ services:
     deploy:
       resources:
         limits: { memory: 1g, cpus: "2.0" }
+
+  worker-channelmanager:
+    <<: *app
+    command: ["python", "-m", "core", "run", "channelmanager", "worker"]
+    profiles: ["channelmanager"]
+    healthcheck:
+      test: ["CMD", "python", "-m", "bots.channelmanager.health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits: { memory: 384m, cpus: "1.0" }
 
   scheduler:
     <<: *app

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import math
+import time
 
 from aiogram import F, Router
 from aiogram.exceptions import TelegramAPIError
@@ -17,6 +18,7 @@ from bots.factory.settings import FactorySettings
 from core.callback_data import CoreVipCb
 from core.db.models import BotUser, ChildBot
 from core.factory.children import ChildError, ChildService
+from core.factory.crypto import decrypt_token, encrypt_token
 from core.i18n import Translate
 from core.sdk.actions import record_user_action
 from core.sdk.context import BotContext
@@ -160,6 +162,12 @@ def build_router(ctx: BotContext) -> Router:
         try:
             child = await children.create(user.user_id, token, str(data["template"]), limit=await limit_for(user))
         except ChildError as e:
+            if e.code == "migration_required":
+                await state.set_data({"template": data["template"], "pending_token": encrypt_token(ctx.platform, token),
+                    "migration_owner": user.user_id, "migration_until": time.time() + 300})
+                await progress.edit_text(t("fac-migration-confirm"), reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                    [btn(t("fac-btn-migrate"), "migrate")], [btn(t("btn-cancel"), "home")]]))
+                return
             await progress.edit_text(t(f"fac-err-{e.code}", limit=str(await limit_for(user))))
             if e.code not in ("token_format", "token_invalid", "telegram"):
                 await state.clear()
@@ -176,6 +184,45 @@ def build_router(ctx: BotContext) -> Router:
               guide=t(f"fac-tpl-{child.template}-guide")),
             reply_markup=kb,
         )
+
+    @router.callback_query(FacCb.filter(F.action == "migrate"))
+    async def cb_migrate(query: CallbackQuery, state: FSMContext, user: BotUser, t: Translate) -> None:
+        data = await state.get_data()
+        if data.get("migration_owner") != user.user_id or data.get("migration_until", 0) <= time.time():
+            await state.clear()
+            await query.answer(t("fac-not-found"), show_alert=True)
+            return
+        if data.get("migration_action") == "resume":
+            child = await children.get_owned(user.user_id, data["migration_bot"])
+            await state.clear()
+            if child is None or child.status == "revoked":
+                await show(query, t("fac-not-found"))
+                return
+            try:
+                await children.resume(child, migrate_existing=True)
+            except ChildError as exc:
+                await show(query, t(f"fac-err-{exc.code}", limit=""))
+                return
+            await ctx.audit.record(user.user_id, "factory.migrate", child.bot_id, template=child.template)
+            refreshed = await children.get(child.bot_id)
+            if refreshed is not None:
+                text, keyboard = await manage_view(refreshed, t)
+                await show(query, text, keyboard)
+            return
+        token = decrypt_token(ctx.platform, data["pending_token"])
+        await state.clear()
+        if not token:
+            await show(query, t("fac-err-token_invalid"))
+            return
+        try:
+            child = await children.create(user.user_id, token, data["template"], limit=await limit_for(user), migrate_existing=True)
+        except ChildError as exc:
+            await show(query, t(f"fac-err-{exc.code}", limit=str(await limit_for(user))))
+            return
+        await ctx.audit.record(user.user_id, "factory.migrate", child.bot_id, template=child.template)
+        await show(query, t("fac-created", username=child.username, template=tpl_name(t, child.template),
+            guide=t(f"fac-tpl-{child.template}-guide")), InlineKeyboardMarkup(inline_keyboard=[
+                [btn(t("fac-btn-manage"), "bot", id=child.bot_id)]]))
 
     # ------------------------------------------------------------------ my bots
     async def list_view(user_id: int, page: int, t: Translate) -> tuple[str, InlineKeyboardMarkup]:
@@ -247,7 +294,7 @@ def build_router(ctx: BotContext) -> Router:
         await show(query, text, kb)
 
     @router.callback_query(FacCb.filter(F.action.in_({"pause", "resume", "public", "brand"})))
-    async def cb_toggle(query: CallbackQuery, callback_data: FacCb, user: BotUser, t: Translate) -> None:
+    async def cb_toggle(query: CallbackQuery, callback_data: FacCb, state: FSMContext, user: BotUser, t: Translate) -> None:
         if (child := await owned(query, callback_data.id, t)) is None:
             return
         try:
@@ -263,6 +310,12 @@ def build_router(ctx: BotContext) -> Router:
                     return
                 await children.set_flags(child, branding=not child.branding)
         except ChildError as e:
+            if e.code == "migration_required":
+                await state.set_data({"migration_action": "resume", "migration_bot": child.bot_id,
+                    "migration_owner": user.user_id, "migration_until": time.time() + 300})
+                await show(query, t("fac-migration-confirm"), InlineKeyboardMarkup(inline_keyboard=[
+                    [btn(t("fac-btn-migrate"), "migrate")], [btn(t("btn-cancel"), "home")]]))
+                return
             await query.answer(t(f"fac-err-{e.code}", limit=""), show_alert=True)
         await ctx.audit.record(user.user_id, f"factory.{callback_data.action}", child.bot_id)
         refreshed = await children.get(child.bot_id)
@@ -290,6 +343,13 @@ def build_router(ctx: BotContext) -> Router:
         try:
             await children.rotate_token(child, token)
         except ChildError as e:
+            if e.code == "migration_required":
+                await state.set_state(None)
+                await state.set_data({"migration_action": "resume", "migration_bot": child.bot_id,
+                    "migration_owner": user.user_id, "migration_until": time.time() + 300})
+                await message.answer(t("fac-migration-confirm"), reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                    [btn(t("fac-btn-migrate"), "migrate")], [btn(t("btn-cancel"), "home")]]))
+                return
             await message.answer(t(f"fac-err-{e.code}", limit=""))
             return
         await state.clear()

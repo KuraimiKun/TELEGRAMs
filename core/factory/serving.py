@@ -40,7 +40,7 @@ class ChildWebhook:
             return web.Response(status=400)
         runtime = await self.registry.get(bot_id)
         if runtime is not None:  # paused/unknown bots: acknowledge so Telegram stops retrying
-            if runtime.ctx.module.slug == "groupguard":
+            if runtime.ctx.module.durable_ingress:
                 # Its durable inbox must be committed before acknowledging delivery.
                 await runtime.dp.feed_raw_update(runtime.ctx.bot, data)
             else:

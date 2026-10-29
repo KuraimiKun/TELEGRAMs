@@ -22,6 +22,10 @@ if TYPE_CHECKING:
     from core.sdk.context import BotContext
 
 
+class DurableIngressError(RuntimeError):
+    """An update was not committed; webhook delivery must fail instead of acknowledging it."""
+
+
 @dataclass(slots=True)
 class PlanSpec:
     name: str
@@ -113,6 +117,8 @@ class BotModule(ABC):
 
     # False for factory-only templates: they never run with their own token, only as user-created bots.
     standalone: ClassVar[bool] = True
+    # Do not acknowledge a webhook until the module's update pipeline has committed its inbox.
+    durable_ingress: ClassVar[bool] = False
     # Key under which the bot factory offers this module as a template (None = not a template).
     factory_template: ClassVar[str | None] = None
     # Features when running as a user-created bot. Payments/VIP and referrals stay off there: Stars paid

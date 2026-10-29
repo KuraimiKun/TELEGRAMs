@@ -101,6 +101,12 @@ def match(text: str, pattern: str, mode="word") -> bool:
                 return True
             start = position + 1
 
+    # Every literal atom is mandatory, even between optional wildcards.
+    # Reject impossible inputs before running the per-character NFA.
+    required = {value for kind, value in seq if kind == "literal"}
+    if not required.issubset(text):
+        return False
+
     literals: dict[str, int] = {}
     one = looping = skipping = any_loop = 0
     for position, (kind, value) in enumerate(seq):

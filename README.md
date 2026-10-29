@@ -5,15 +5,16 @@ gateway — with a shared, production-grade core: users and memberships, Telegra
 plans, referrals, forced channel subscription, a full localized admin panel, broadcasts, scheduling,
 metrics and backups. Each bot is a small plugin package under `bots/`.
 
-Seven standalone bots ship with the platform, with four templates for user-created bots:
+Eight standalone bots ship with the platform, with four templates for user-created bots:
 
 | Bot | What it does |
 |---|---|
 | **`socialdownload`** | Downloads videos, photos and music from TikTok, Instagram, YouTube, X, Facebook, Pinterest, Reddit, SoundCloud and 1,800+ other sites (yt-dlp + gallery-dl). Files up to 2 GB through the local Bot API, signed direct links beyond that, inline mode, search, playlists. |
 | **`notes`** | Notes & reminders. A deliberately small bot that shows how to build on the SDK. |
+| **`channelmanager`** | Publishing, schedules, automation, member workflows, publishing teams, locked content, campaigns, invitation gates, channel Stars plans and branded full managers. See [setup](docs/channelmanager/OPERATIONS.md), [publishing](docs/channelmanager/ADVANCED_PUBLISHING.md), [automation](docs/channelmanager/SOURCE_AUTOMATION.md), [members](docs/channelmanager/MEMBER_WORKFLOWS.md), and [growth/billing](docs/channelmanager/GROWTH_AND_BILLING.md). |
 | **`anonymous`** | Anonymous inboxes, anonymous replies, personal links, story cards and inline sharing. Also a factory template. |
 | **`groupguard`** | Group moderation, warnings, captcha, flood and content locks, notes, filters and night mode. Also a factory template. |
-| **`factory`** | Hosts user-created anonymous inbox, feedback/contact, group manager and custom command/menu bots. Owner management, broadcasts and a public gallery. |
+| **`factory`** | Hosts user-created anonymous inbox, feedback/contact, group manager, Channel Manager and custom command/menu bots. Owner management, broadcasts and a public gallery. |
 | **`cvbot`** | Analyzes PDF, DOCX, image or text CVs; job matching, cover letters, LinkedIn copy, interview practice and shareable scores. VIP PDF exports and one-off Stars reviews. |
 | **`doctools`** | Student document basket: PDF/image transformations, OCR, word counts, citations, AI summaries and shareable study quizzes. Heavy jobs run in a dedicated worker. |
 

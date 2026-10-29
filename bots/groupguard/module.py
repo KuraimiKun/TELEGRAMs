@@ -58,6 +58,7 @@ from core.sdk.module import AdminSection, BotModule, CommandSpec, FactoryJob, Pl
 
 class GroupGuardBot(BotModule):
     slug = "groupguard"
+    durable_ingress = True
     title = "Group Guard"
     table_prefix = "gg_"
     features = {Feature.ADMIN, Feature.LANG, Feature.VIP, Feature.BROADCAST, Feature.DAILY_STATS}

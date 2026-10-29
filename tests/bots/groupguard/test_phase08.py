@@ -1,6 +1,7 @@
 """Connections, policy, delayed cleanup, forum effects and operator isolation through real routers."""
 
 from datetime import timedelta
+from types import SimpleNamespace
 
 from aiogram.types import ChatMemberLeft, ForumTopic
 from sqlalchemy import select, update
@@ -474,13 +475,16 @@ async def test_group_broadcast_destination_failures_are_isolated_and_recorded(en
     assert any(m.chat_id == GROUP and m.text == "Payload" for m in api.calls("SendMessage"))
 
 
-async def test_local_broadcast_rate_wait_does_not_consume_api_retry_budget(env, api):
+async def test_local_broadcast_rate_wait_does_not_consume_api_retry_budget(env, api, monkeypatch):
     operator = env.child.owner_id if env.child else (env.env.admin_ids or env.platform.super_admin_ids)[0]
     await send(env, pm("/broadcast Rate limited", operator))
     await group_broadcast.tick(env)
     import time
 
-    await env.redis.set(env.keys("guard_outbound_rate", int(time.time())), 100, ex=2)
+    now = time.time()
+    # Seed and consume the same bucket even when the sweep crosses a second.
+    monkeypatch.setattr(group_broadcast, "time", SimpleNamespace(time=lambda: now))
+    await env.redis.set(env.keys("guard_outbound_rate", int(now)), 100, ex=60)
     await durable.sweep(env)
     async with env.sm() as session:
         job = (

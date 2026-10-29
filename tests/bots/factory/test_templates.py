@@ -33,7 +33,7 @@ async def test_templates_are_factory_only():
     assert {m.slug for m in discover()} >= {"anonymous", "groupguard", "factory"}
     assert not {"feedback", "custombot"} & {m.slug for m in discover()}
     names = {m.factory_template for m in discover(include_templates=True) if m.factory_template}
-    assert names == {"anonymous", "feedback", "groupguard", "custom"}
+    assert names == {"anonymous", "feedback", "groupguard", "custom", "channelmanager"}
 
 
 async def test_feedback_round_trip(sm, redis, api, tmp_path):

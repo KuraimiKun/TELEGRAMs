@@ -1,0 +1,31 @@
+groups:
+  - name: channelmanager
+    rules:
+      - alert: ChannelManagerQueueLag
+        expr: channelmanager_queue_lag_seconds > 120
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: "Channel Manager due work is delayed"
+          description: "Inspect worker progress, PostgreSQL/Redis health, rollout stage and rate delays."
+      - alert: ChannelManagerUnknownEffects
+        expr: channelmanager_work{state=~"uncertain|growth_uncertain|members_uncertain|auto_uncertain"} > 0
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Channel Manager has effects requiring reconciliation"
+          description: "Do not reset dispatched uncertainty to pending. Use the scoped recovery runbook."
+      - alert: ChannelManagerFinancialReview
+        expr: channelmanager_work{state=~"billing_review|refund_review"} > 0
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Channel payment or refund needs review"
+          description: "Reconcile the native charge and linked grant before changing any ledger state."
+      - alert: ChannelManagerFailedReceipts
+        expr: channelmanager_work{state="inbox_failed"} > 0
+        for: 1m
+        labels: {severity: warning}
+        annotations:
+          summary: "Channel Manager has failed durable receipts"
+          description: "Inspect sanitized errors, correct the cause and requeue the same receipt only."

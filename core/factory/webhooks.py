@@ -12,6 +12,7 @@ CHILD_UPDATE_TYPES = [
     "message",
     "edited_message",
     "channel_post",
+    "edited_channel_post",
     "message_reaction",
     "message_reaction_count",
     "callback_query",

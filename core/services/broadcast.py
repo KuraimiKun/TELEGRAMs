@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import secrets
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import timedelta
 
@@ -70,6 +71,8 @@ class BroadcastService:
         self.metric = metric or keys.slug
         self.redis = redis
         self.keys = keys
+        # Optional module-specific shared sender budget. Other bots keep existing behavior.
+        self.before_send: Callable[[int], Awaitable[None]] | None = None
 
     async def count_audience(self, target: str) -> int:
         async with self.sm() as session:
@@ -166,6 +169,8 @@ class BroadcastService:
     async def _send(self, bot: Bot, b: Broadcast, uid: int) -> str:
         for _ in range(3):
             try:
+                if self.before_send is not None:
+                    await self.before_send(uid)
                 await bot.copy_message(chat_id=uid, from_chat_id=b.from_chat_id, message_id=b.message_id)
                 return "sent"
             except TelegramRetryAfter as e:

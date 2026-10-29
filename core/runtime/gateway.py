@@ -143,7 +143,7 @@ async def serve_gateway(contexts: list[BotContext], stop: asyncio.Event) -> None
             path = f"/webhook/{c.slug}"
             secret = c.env.effective_webhook_secret
             SimpleRequestHandler(dispatcher=dp, bot=c.bot, secret_token=secret,
-                                 handle_in_background=c.module.slug != "groupguard").register(app, path=path)
+                                 handle_in_background=not c.module.durable_ingress).register(app, path=path)
             setup_application(app, dp, bot=c.bot)
 
     runner = web.AppRunner(app)

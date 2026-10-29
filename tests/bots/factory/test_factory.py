@@ -137,3 +137,51 @@ async def test_revoked_bot_token_is_erased(fctx):
 
 def test_platform_requires_secret_for_factory():
     assert PlatformConfig().factory_secret_key is None
+
+
+async def test_channelmanager_foreign_webhook_requires_explicit_migration(fctx, api):
+    from aiogram.types import WebhookInfo
+    api.responses["GetWebhookInfo"] = WebhookInfo(url="https://old-host.example/webhook", has_custom_certificate=False, pending_update_count=0)
+    dp = build_dispatcher(fctx)
+    await create_via_chat(dp, fctx, api, template="channelmanager")
+    assert await fctx.extras["children"].get(CHILD_ID) is None
+    assert not api.calls("DeleteWebhook") and not api.calls("SetWebhook")
+    assert "Migrating" in api.calls("EditMessageText")[-1].text
+    await dp.feed_update(fctx.bot, callback_update("fac:migrate:0:1:", user_id=OWNER + 1))
+    assert await fctx.extras["children"].get(CHILD_ID) is None
+    await dp.feed_update(fctx.bot, callback_update("fac:migrate:0:1:", user_id=OWNER))
+    child = await fctx.extras["children"].get(CHILD_ID)
+    assert child and child.template == "channelmanager"
+    assert api.calls("DeleteWebhook")
+    await fctx.extras["children"]._set(CHILD_ID, status="paused")
+    count = len(api.calls("DeleteWebhook"))
+    await dp.feed_update(fctx.bot, callback_update(f"fac:resume:{CHILD_ID}:1:", user_id=OWNER))
+    assert (await fctx.extras["children"].get(CHILD_ID)).status == "paused"
+    assert len(api.calls("DeleteWebhook")) == count
+    await dp.feed_update(fctx.bot, callback_update("fac:migrate:0:1:", user_id=OWNER))
+    assert (await fctx.extras["children"].get(CHILD_ID)).status == "active"
+    assert len(api.calls("DeleteWebhook")) == count + 1
+
+
+async def test_channelmanager_pause_without_usable_token_still_fences_bindings(fctx, api):
+    from aiogram.types import WebhookInfo
+    from sqlalchemy import select
+
+    from bots.channelmanager.models import Channel, Event, SenderBinding
+    from tests.conftest import BOT_ID
+    api.responses["GetWebhookInfo"] = WebhookInfo(url="", has_custom_certificate=False, pending_update_count=0)
+    children = fctx.extras["children"]
+    child = await children.create(OWNER, CHILD_TOKEN, "channelmanager", limit=1)
+    async with fctx.sm() as session:
+        session.add(Channel(bot_id=BOT_ID, channel_id=-1001234567890, title="Control", status="active", sender_paused=True))
+        await session.flush()
+        session.add(SenderBinding(bot_id=BOT_ID, channel_id=-1001234567890, sender_bot_id=CHILD_ID,
+            owner_id=OWNER, token_epoch="opaque", control_username="control"))
+        await session.commit()
+    await children._set(CHILD_ID, token_enc="unreadable")
+    child = await children.get(CHILD_ID)
+    await children.pause(child)
+    async with fctx.sm() as session:
+        assert not (await session.scalar(select(SenderBinding))).active
+        assert (await session.scalar(select(Channel))).sender_paused
+        assert (await session.scalar(select(Event))).action == "sender.stopped"

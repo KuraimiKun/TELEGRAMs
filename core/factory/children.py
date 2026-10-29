@@ -163,7 +163,15 @@ class ChildService:
             return [int(x) for x in (await session.execute(stmt)).scalars()]
 
     # ------------------------------------------------------------------ lifecycle
-    async def create(self, owner_id: int, token: str, template: str, *, limit: int) -> ChildBot:
+    async def _check_hosting(self, bot: Bot, bot_id: int, template: str, migrate_existing: bool) -> None:
+        if template != "channelmanager" or migrate_existing:
+            return
+        info = await bot.get_webhook_info()
+        expected = (self.platform.webhook_base_url or "").rstrip("/") + webhooks.child_webhook_path(bot_id)
+        if info.url and (not self.platform.webhook_base_url or info.url != expected):
+            raise ChildError("migration_required")
+
+    async def create(self, owner_id: int, token: str, template: str, *, limit: int, migrate_existing: bool = False) -> ChildBot:
         if template not in self.templates:
             raise ChildError("template")
         me = await self._identify(token)
@@ -179,6 +187,10 @@ class ChildService:
                 raise ChildError("taken")
         if existing is None and await self.count_for_owner(owner_id) >= limit:
             raise ChildError("limit")
+
+        if template == "channelmanager" and not migrate_existing:
+            async with self._bot(token) as bot:
+                await self._check_hosting(bot, me.id, template, migrate_existing)
 
         token_enc = encrypt_token(self.platform, token.strip())
         title = (me.full_name or me.username or str(me.id))[:128]
@@ -235,6 +247,9 @@ class ChildService:
         # Fence cached dispatchers/queued work first; already-dispatched RPCs remain explicit uncertainty.
         await self._set(child.bot_id, status="paused")
         cleanup_error = None
+        if child.template == "channelmanager":
+            from bots.channelmanager.senders import stop_owned
+            cleanup_error = await stop_owned(self.sm, child.bot_id, "pause")
         if token and child.template == "groupguard":
             from core.sdk.context import ChildInfo
             from core.sdk.registry import BotIdentityMismatch, SharedInfra, factory_templates, init_context
@@ -262,12 +277,13 @@ class ChildService:
         await self._set(child.bot_id, status="paused")
         await self.notify_changed(child.bot_id)
 
-    async def resume(self, child: ChildBot) -> None:
+    async def resume(self, child: ChildBot, *, migrate_existing: bool = False) -> None:
         token = await self._token(child)
         if not token:
             raise ChildError("token_invalid")
         try:
             async with self._bot(token) as bot:
+                await self._check_hosting(bot, child.bot_id, child.template, migrate_existing)
                 await webhooks.attach(bot, child.bot_id, self.platform)
         except TelegramUnauthorizedError as e:
             await self._set(child.bot_id, status="error", last_error="token revoked in @BotFather")

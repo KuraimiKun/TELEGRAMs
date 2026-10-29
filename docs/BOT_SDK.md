@@ -32,6 +32,7 @@ class QuizBot(BotModule):
 |---|---|
 | `async setup(ctx)` | Create your services and store them in `ctx.extras` (injected into handlers by name) |
 | `routers(ctx)` | Return **fresh** `Router`s — never module-level singletons (one dispatcher per bot) |
+| `durable_ingress = True` | Process webhooks before acknowledging; the update pipeline must commit its durable inbox. Raise `core.sdk.module.DurableIngressError` on failed receipt so the shared error handler cannot acknowledge it. Polling behavior is unchanged; this acknowledgement guarantee applies to webhooks. |
 | `commands()` | `CommandSpec`s for the command menu; descriptions are localized via `cmd-<command>` keys |
 | `admin_sections()` | Extra `/admin` tabs: `AdminSection(tab, title_or_i18n_key, router_factory)` |
 | `processes()` | Long-running processes (`python -m core run <slug> <name>`); stop when `ctx.shutdown` is set |

@@ -1,5 +1,7 @@
 """Federation intent/enforcement effects use real dispatchers and shared-server member state."""
 
+from types import SimpleNamespace
+
 from aiogram.types import ChatMemberBanned
 from sqlalchemy import select, update
 
@@ -385,7 +387,7 @@ async def test_fban_after_issued_request_captcha_cannot_approve(env, api):
     assert api.calls('DeclineChatJoinRequest')
 
 
-async def test_passive_local_quota_defers_durable_effect_and_retry_after_restarts(env, api):
+async def test_passive_local_quota_defers_durable_effect_and_retry_after_restarts(env, api, monkeypatch):
     import time
 
     from aiogram.exceptions import TelegramRetryAfter
@@ -394,10 +396,13 @@ async def test_passive_local_quota_defers_durable_effect_and_retry_after_restart
     actor, fed = await network(env)
     await drain(env)
     await fed_bans.change(env, actor, fed.id, fed_bans.BanInput(30, 'Later enforcement'), active=True)
-    await env.redis.set(env.keys('guard_outbound_rate', int(time.time())), 100, ex=2)
+    now = time.time()
+    # Passive enforcement must read the bucket seeded by this test.
+    monkeypatch.setattr(fed_enforcement, 'time', SimpleNamespace(time=lambda: now))
+    await env.redis.set(env.keys('guard_outbound_rate', int(now)), 100, ex=60)
     assert await fed_enforcement.passive(env, GROUP, tg_user(30), event='message:777001')
     assert not api.calls('BanChatMember')
-    await env.redis.delete(env.keys('guard_outbound_rate', int(time.time())))
+    await env.redis.delete(env.keys('guard_outbound_rate', int(now)))
     original = api.responses['BanChatMember']
     api.responses['BanChatMember'] = lambda m: TelegramRetryAfter(method=m, message='known wait', retry_after=1)
     await durable.sweep(env)

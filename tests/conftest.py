@@ -5,6 +5,7 @@ from __future__ import annotations
 import itertools
 from collections.abc import AsyncGenerator, AsyncIterator, Callable
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import fakeredis.aioredis
@@ -22,10 +23,11 @@ from aiogram.types import (
     Update,
     User,
 )
+from pydantic_settings import DotEnvSettingsSource
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from core.ai.client import AIClient
-from core.config import PlatformConfig
+from core.config import PlatformConfig, get_platform_config
 from core.db.base import Base
 from core.db.models import Bot as BotRecord
 from core.i18n import Translator
@@ -45,6 +47,22 @@ from core.services.users import UserService
 
 TOKEN = "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
 BOT_ID = 123456
+
+
+def pytest_configure(config):
+    """Tests must never inherit credentials or enabled-bot selection from the real workspace .env."""
+    workspace_env = Path(__file__).resolve().parents[1] / ".env"
+    original = DotEnvSettingsSource._read_env_file
+    patch = pytest.MonkeyPatch()
+
+    def read_test_env(source, file_path):
+        if Path(file_path).resolve() == workspace_env:
+            return {}
+        return original(source, file_path)
+
+    patch.setattr(DotEnvSettingsSource, "_read_env_file", read_test_env)
+    config.add_cleanup(patch.undo)
+    get_platform_config.cache_clear()
 
 
 def _bind(result: Any, bot: Bot) -> Any:
